@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملمس · لأنّ كلّ لمسةٍ تهمّ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="landing">
+
+    <!-- شريط علوي بسيط -->
+    <header class="top-bar">
+        <div class="top-bar-inner">
+            <a href="{{ url_for('index') }}" class="brand-link">ملمس</a>
+            {% if current_user %}
+                <div class="user-chip">
+                    {% if current_user.picture %}
+                        <img src="{{ current_user.picture }}" alt="">
+                    {% else %}
+                        <span class="avatar-fallback">{{ current_user.name[0] if current_user.name else 'م' }}</span>
+                    {% endif %}
+                    <span class="user-name">{{ current_user.name or 'مستخدم' }}</span>
+                    {% if current_user.role == 'admin' %}
+                        <span class="badge-admin">👑 ناشر</span>
+                        <a href="{{ url_for('admin_panel') }}" class="link-admin">لوحة التحكّم</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="link-logout">خروج</a>
+                </div>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn-google">
+                    <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+                        <path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+                        <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                    </svg>
+                    دخول بـ Google
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- 1. القسم البطل (Hero) -->
+    <section class="hero-landing">
+        <div class="hero-inner">
+            <div class="hero-tag">هديّة العقيقة الفاخرة</div>
+            <h1 class="hero-title">
+                صفحة هبوط رقميّة تجمع <span class="hl">حجوزات مسبقة</span><br>
+                بعربون مسترد لمنتج هديّة العقيقة الفاخرة
+            </h1>
+            <p class="hero-sub">
+                قبل أن تصنع 1000 قطعة وتراهن — اقبضي 20 قراراً حقيقياً بـ20 ريال عربون.
+                قرار «صنع/لا تصنع» مبنيّ على دفع فعليّ، لا على نوايا.
+            </p>
+            <a href="{{ url_for('login') }}" class="cta-gold">
+                {% if current_user %}جرّبي الحجز الآن{% else %}دخول بـ Google لتجربة الحجز{% endif %} ←
+            </a>
+            <div class="hero-meta">
+                <span>✦ 14 يوماً اختبار</span>
+                <span>✦ 20 ريال عربون مسترد</span>
+                <span>✦ بدون مخاطرة</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. المشكلة (3 آلام) -->
+    <section class="block">
+        <div class="block-inner">
+            <h2 class="block-title">إن كنتِ أمّاً سعوديّة، فأنتِ تعرفين هذا الألم</h2>
+            <p class="block-sub">3 إحباطات سمعناها مرّةً تلو الأخرى من كلّ أمّ تحدّثنا إليها</p>
+            <div class="three-cards">
+                <div class="card-soft">
+                    <div class="card-emoji">😔</div>
+                    <h3>ماركات غربيّة لا تعكس ثقافتك</h3>
+                    <p>تبحثين عن هديّة عقيقة بهويّة عربيّة راقية، فلا تجدين سوى تصاميم لا تحمل روح المناسبة.</p>
+                </div>
+                <div class="card-soft">
+                    <div class="card-emoji">📦</div>
+                    <h3>منتجات صينيّة رخيصة خابت معكِ</h3>
+                    <p>دفعتِ مرّةً واستلمتِ منتجاً رديئاً يكسر قلب اللحظة بدلاً من أن يُكرّمها.</p>
+                </div>
+                <div class="card-soft">
+                    <div class="card-emoji">⏰</div>
+                    <h3>نافذة العقيقة ضيّقة — والقرار سريع</h3>
+                    <p>المناسبة تحدث مرّةً واحدة. لا تملكين رفاهيّة المراهنة على ماركة لم تجرّبيها.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. الحل (3 فوائد) -->
+    <section class="block alt">
+        <div class="block-inner">
+            <h2 class="block-title">ولأجلكِ بنينا <span class="hl">ملمس</span></h2>
+            <p class="block-sub">هويّة عربيّة + أمان جودة + توصيل سريع — في علبة واحدة جاهزة للإهداء</p>
+            <div class="three-cards">
+                <div class="card-gold">
+                    <div class="card-emoji">🌙</div>
+                    <h3>تصميم عربيّ راقٍ يليق بالمناسبة</h3>
+                    <p>كلّ تفصيلة مدروسة لتحمل روح العقيقة العربيّة — لا نسخة معرّبة من شيءٍ آخر.</p>
+                </div>
+                <div class="card-gold">
+                    <div class="card-emoji">🛡️</div>
+                    <h3>منتجات آمنة بمعايير SABER السعوديّة</h3>
+                    <p>مطابقة لاشتراطات الجودة المحلّية — تعلمين أنّ الذي بين يديكِ آمنٌ على طفلك.</p>
+                </div>
+                <div class="card-gold">
+                    <div class="card-emoji">🎁</div>
+                    <h3>تغليف فاخر جاهز للإهداء — وتوصيل سريع</h3>
+                    <p>لا حاجة لتغليف إضافيّ. تصلكِ العلبة جاهزة لتُسلَّم في يوم العقيقة مباشرةً.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. الدليل الاجتماعي -->
+    <section class="block">
+        <div class="block-inner">
+            <h2 class="block-title">من خلف ملمس</h2>
+            <div class="founder-card">
+                <div class="founder-avatar">س</div>
+                <div class="founder-body">
+                    <h3>سعدي · مؤسّس ملمس</h3>
+                    <p>
+                        قبل أن أصنع قطعةً واحدة، أردتُ أن أسمع رأي 20 أمّاً سعوديّة بصراحة.
+                        هذه الصفحة هي دعوتي لكِ أن تكوني واحدةً منهنّ.
+                        رأيكِ سيُحدّد شكل المنتج النهائيّ.
+                    </p>
+                    <p class="founder-note">
+                        <strong>أنا متاح بشكل شخصيّ</strong> لاجتماع تعريفيّ مدّته 15 دقيقة لأشرح فكرة المنتج
+                        وأستمع لملاحظاتكِ. هذا ليس تسويقاً — هذا بحث ميدانيّ.
+                    </p>
+                </div>
+            </div>
+            <div class="testimonial-placeholder">
+                <span class="quote">”</span>
+                <p>شهادة أوّل أمّ ستجرّب المنتج ستظهر هنا قريباً — كوني أنتِ من تكتبها.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. CTA النهائي -->
+    <section class="cta-final">
+        <div class="block-inner">
+            <h2>جرّبي الحجز اليوم — قبل أن تنتهي نافذة الاختبار</h2>
+            <p>14 يوماً فقط. 20 ريال عربون مسترد كاملاً. صفر مخاطرة. كامل الصدق.</p>
+            <a href="{{ url_for('login') }}" class="cta-gold large">
+                {% if current_user %}ابدئي الحجز الآن{% else %}دخول بـ Google والبدء{% endif %} ←
+            </a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        ملمس · مشروع تجارة عربيّ صنع بيد سعوديّة · {{ 2026 }}
+    </footer>
+
+</body>
+</html>

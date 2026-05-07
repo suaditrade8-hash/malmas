@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 · ممنوع · ملمس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="error-page">
+    <div class="error-box">
+        <div class="error-code">403</div>
+        <h1>هذه الصفحة للناشرين فقط</h1>
+        <p>لا تملك الصلاحيّة للوصول إلى لوحة التحكّم. إن كان لديك سؤال، تواصل مع المشرف.</p>
+        <a href="{{ url_for('index') }}" class="cta-gold">العودة للصفحة الرئيسيّة</a>
+    </div>
+</body>
+</html>

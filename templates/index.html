@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هديّة العقيقة الفاخرة · مَلْمَس</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- شريط علوي: دخول/خروج Google + رابط لوحة الإدارة -->
+    <header class="top-bar">
+        <div class="top-bar-inner">
+            <a href="{{ url_for('about') }}" class="brand-link">ملمس · تعرّف</a>
+            {% if current_user %}
+                <div class="user-chip">
+                    {% if current_user.picture %}
+                        <img src="{{ current_user.picture }}" alt="">
+                    {% else %}
+                        <span class="avatar-fallback">{{ current_user.name[0] if current_user.name else 'م' }}</span>
+                    {% endif %}
+                    <span class="user-name">{{ current_user.name or 'مستخدم' }}</span>
+                    {% if current_user.role == 'admin' %}
+                        <span class="badge-admin">👑 ناشر</span>
+                        <a href="{{ url_for('admin_panel') }}" class="link-admin">لوحة التحكّم</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="link-logout">خروج</a>
+                </div>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn-google">
+                    <svg viewBox="0 0 18 18" width="16" height="16" aria-hidden="true">
+                        <path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+                        <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                    </svg>
+                    دخول بـ Google
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="brand">مَلْمَس</div>
+        <div class="tagline">لأنّ كلّ لمسةٍ تهمّ</div>
+
+        <section class="hero">
+            <h1>هديّة العقيقة الفاخرة</h1>
+            <div class="price">٣٤٩ – ٤٤٩ ريالاً</div>
+            <ul class="features">
+                <li>تصميم عربيّ راقٍ يليق بمناسبة العقيقة</li>
+                <li>منتجات آمنة بمعايير SABER السعوديّة</li>
+                <li>تغليف فاخر جاهز للإهداء مباشرةً</li>
+                <li>توصيل سريع لكافّة مناطق المملكة</li>
+            </ul>
+        </section>
+
+        <div class="deposit-note">
+            <strong>عربون ٢٠ ريالاً قابل للاسترداد كاملاً.</strong>
+            احجزي مكانكِ الآن، وسنتواصل معكِ خلال ٤–٦ أسابيع لتأكيد الشحن أو ردّ المبلغ كاملاً دون أيّ خصم.
+        </div>
+
+        <form id="bookingForm" novalidate>
+            <div class="form-title">احجزي هديّتكِ</div>
+
+            <div class="field">
+                <label for="full_name">الاسم الكامل</label>
+                <input type="text" id="full_name" name="full_name" required>
+            </div>
+
+            <div class="field">
+                <label for="phone">رقم الجوّال</label>
+                <input type="tel" id="phone" name="phone" placeholder="05xxxxxxxx" required>
+            </div>
+
+            <div class="field">
+                <label for="region">المنطقة</label>
+                <select id="region" name="region" required>
+                    <option value="">اختاري المنطقة</option>
+                    <option value="الرياض">الرياض</option>
+                    <option value="جدّة">جدّة / مكّة المكرّمة</option>
+                    <option value="الشرقية">المنطقة الشرقيّة</option>
+                    <option value="المدينة">المدينة المنوّرة</option>
+                    <option value="أخرى">منطقة أخرى</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>طريقة الدفع</label>
+                <div class="pay-options">
+                    <label>
+                        <input type="radio" name="payment_method" value="mada" required>
+                        <span>مدى</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="payment_method" value="visa">
+                        <span>فيزا</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="payment_method" value="apple_pay">
+                        <span>Apple&nbsp;Pay</span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="primary" id="submitBtn">احجزي بـ٢٠ ريالاً</button>
+
+            <div class="message" id="message"></div>
+        </form>
+
+    </div>
+
+    <script>
+        const form = document.getElementById('bookingForm');
+        const messageBox = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            messageBox.classList.remove('show', 'success', 'error');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري الحجز...';
+
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: new FormData(form)
+                });
+                const data = await response.json();
+
+                messageBox.textContent = data.message || 'تمّ الحجز بنجاح.';
+                messageBox.classList.add('show', data.success ? 'success' : 'error');
+
+                if (data.success) {
+                    form.reset();
+                    submitBtn.textContent = 'تمّ الحجز ✓';
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'احجزي بـ٢٠ ريالاً';
+                }
+            } catch (error) {
+                messageBox.textContent = 'تعذّر الاتّصال بالخادم. يُرجى المحاولة مرّةً أخرى.';
+                messageBox.classList.add('show', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'احجزي بـ٢٠ ريالاً';
+            }
+        });
+    </script>
+</body>
+</html>

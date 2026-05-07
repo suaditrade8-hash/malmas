@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكّم · ملمس</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="admin-page">
+
+    <header class="top-bar">
+        <div class="top-bar-inner">
+            <a href="{{ url_for('index') }}" class="brand-link">ملمس</a>
+            <div class="user-chip">
+                {% if current_user.picture %}
+                    <img src="{{ current_user.picture }}" alt="">
+                {% endif %}
+                <span class="user-name">{{ current_user.name }}</span>
+                <span class="badge-admin">👑 ناشر</span>
+                <a href="{{ url_for('logout') }}" class="link-logout">خروج</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <h1 class="admin-title">لوحة التحكّم</h1>
+        <p class="admin-sub">جميع المستخدمين الذين سجّلوا الدخول إلى ملمس · {{ users|length }} مستخدم</p>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>الصورة</th>
+                        <th>الاسم</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>الدور</th>
+                        <th>تاريخ التسجيل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for u in users %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            {% if u.picture_url %}
+                                <img src="{{ u.picture_url }}" class="row-avatar" alt="">
+                            {% else %}
+                                <span class="row-avatar fallback">{{ u.name[0] if u.name else '?' }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.name or '—' }}</td>
+                        <td class="email">{{ u.email }}</td>
+                        <td>
+                            {% if u.role == 'admin' %}
+                                <span class="role-pill admin">👑 ناشر</span>
+                            {% else %}
+                                <span class="role-pill user">مستخدم</span>
+                            {% endif %}
+                        </td>
+                        <td class="date">{{ u.created_at }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="empty">لا يوجد مستخدمون مسجّلون بعد.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>
