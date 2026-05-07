@@ -180,15 +180,20 @@
 **النسخة:** 1.0.0
 **المنصّة:** Render (Free Plan · Frankfurt region)
 **ملف Blueprint:** `render.yaml`
-**التسجيل:** Google OAuth — مكتبة `authlib` (المعتمدة حاليّاً، لا flask-oauthlib المهجورة).
-**الصلاحيّات:** نظام دورين فقط — `admin` (يُضاف بريده في `ADMIN_EMAILS`) و`user` (الافتراضيّ).
-**لوحة الإدارة:** `/admin` — تعرض جميع المستخدمين المسجّلين.
+**التسجيل:** ❌ تمّ التراجع عن Google OAuth — قرار مؤسّس صريح بعدم الاعتماد على Google Console.
+**الحماية:** HTTP Basic Auth على `/admin` فقط · كلمة المرور في `ADMIN_PASSWORD` (متغيّر بيئة Render).
+**لوحة الإدارة:** `/admin` — تعرض **الحجوزات الفعليّة** (للمساعدة في قرار Make/No-Make).
 **صفحة الهبوط:** `/about` — 5 أقسام (Hero · المشكلة · الحل · المؤسّس · CTA).
 
 **ملفّات اليوم الرابع المضافة:**
 - `requirements.txt` · `.gitignore` · `.env.example` · `render.yaml`
-- `templates/landing.html` · `templates/admin.html` · `templates/403.html`
+- `templates/landing.html` · `templates/admin.html`
 - `pricing.md` · `launch_messages.md` · `feedback_raw.md`
+
+**سبب التراجع عن Google OAuth (2026-05-07):**
+- المؤسّس فضّل البساطة: متغيّر بيئة واحد في Render بدلاً من إنشاء مشروع OAuth في Google Console.
+- لوحة الإدارة الآن تعرض حجوزات حقيقيّة (لا مستخدمين Google) — أكثر فائدة لقرار Make/No-Make.
+- لا حاجة لجدول `users`، ولا مكتبة `authlib`، ولا redirect URIs.
 
 **القنوات المستخدمة في الإطلاق:**
 1. WhatsApp شخصيّ — 10 رسائل مخصّصة (انظر `launch_messages.md`).

@@ -1,6 +1,6 @@
 # تطبيق Flask لمشروع ملمس — صفحة حجز هدية العقيقة (Smoke Test)
-# يُغطّي: الصفحة الرئيسية، صفحة الهبوط، تسجيل الدخول بـ Google OAuth،
-# لوحة الإدارة (Admin Panel)، وإرسال الحجوزات إلى قاعدة بيانات SQLite.
+# يُغطّي: الصفحة الرئيسية، صفحة الهبوط، استلام الحجوزات،
+# ولوحة إدارة محميّة بكلمة مرور (HTTP Basic Auth) لعرض الحجوزات.
 
 import os
 import re
@@ -10,10 +10,9 @@ from functools import wraps
 
 from flask import (
     Flask, render_template, request, jsonify,
-    session, redirect, url_for, abort,
+    Response,
 )
 from werkzeug.middleware.proxy_fix import ProxyFix
-from authlib.integrations.flask_client import OAuth
 
 # تحميل ملفّ .env محلّياً (يُتجاهل بصمت إن لم يكن مثبّتاً في الإنتاج).
 try:
@@ -31,7 +30,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-only-change-in-production')
 
 # Render يضع التطبيق خلف reverse proxy — نطلب من Flask احترام X-Forwarded-Proto
-# حتى يولّد روابط https:// (مطلوبة لمطابقة redirect URI في Google OAuth).
+# حتى يولّد روابط https:// عند الحاجة (مفيد للمستقبل وللخلف الصحيح للوكيل).
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_for=1)
 if os.environ.get('RENDER'):
     app.config['PREFERRED_URL_SCHEME'] = 'https'
@@ -39,35 +38,17 @@ if os.environ.get('RENDER'):
 # مسار قاعدة البيانات بصيغة مطلقة — يعمل محلّياً وعلى Render معاً.
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data.db')
 
-
-# قائمة بريد المدراء من المتغيّرات السرّية (مفصولة بفواصل).
-def get_admin_emails():
-    raw = os.environ.get('ADMIN_EMAILS', '')
-    return {e.strip().lower() for e in raw.split(',') if e.strip()}
-
-
-# ----------------------------------------------------------------------
-# تسجيل عميل Google OAuth
-# ----------------------------------------------------------------------
-
-oauth = OAuth(app)
-oauth.register(
-    name='google',
-    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
-    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_kwargs={'scope': 'openid email profile'},
-)
+# كلمة مرور لوحة الإدارة — تُضبط في Render dashboard بمتغيّر البيئة ADMIN_PASSWORD.
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', '')
 
 
 # ----------------------------------------------------------------------
 # قاعدة البيانات — تهيئة الجداول وعمليّات القراءة/الكتابة
 # ----------------------------------------------------------------------
 
-# تُنشئ جداول الحجوزات والمستخدمين عند أوّل تشغيل إن لم تكن موجودة.
+# تُنشئ جدول الحجوزات في قاعدة البيانات إن لم يكن موجوداً.
 def init_db():
     with sqlite3.connect(DB_PATH) as conn:
-        # جدول حجوزات هدية العقيقة (موجود من اليوم الثالث).
         conn.execute('''
             CREATE TABLE IF NOT EXISTS bookings (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -77,18 +58,6 @@ def init_db():
                 payment_method  TEXT    NOT NULL,
                 deposit_status  TEXT    NOT NULL DEFAULT 'reserved',
                 created_at      TEXT    NOT NULL
-            )
-        ''')
-
-        # جدول المستخدمين — يُنشأ في اليوم الرابع لتسجيل الدخول بـ Google.
-        conn.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id          INTEGER  PRIMARY KEY AUTOINCREMENT,
-                email       TEXT     UNIQUE NOT NULL,
-                name        TEXT,
-                picture_url TEXT,
-                role        TEXT     NOT NULL DEFAULT 'user',
-                created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
         conn.commit()
@@ -126,91 +95,45 @@ def build_confirmation_message(full_name):
     )
 
 
-# تُسجّل المستخدم في جدول users (إدراج جديد أو تحديث بياناته)، وتُعيد قاموساً يحوي الدور.
-def upsert_user(email, name, picture_url):
-    email_lower = (email or '').strip().lower()
-    admin_emails = get_admin_emails()
-    role = 'admin' if email_lower in admin_emails else 'user'
-
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.row_factory = sqlite3.Row
-        existing = conn.execute(
-            'SELECT id, role FROM users WHERE email = ?', (email_lower,)
-        ).fetchone()
-
-        if existing:
-            # تحديث الاسم والصورة فقط — لا نُلغي ترقية الأدمن إن وُجدت.
-            new_role = 'admin' if email_lower in admin_emails else existing['role']
-            conn.execute(
-                '''UPDATE users
-                   SET name = ?, picture_url = ?, role = ?
-                   WHERE id = ?''',
-                (name, picture_url, new_role, existing['id'])
-            )
-            user_id = existing['id']
-            role = new_role
-        else:
-            cursor = conn.execute(
-                '''INSERT INTO users (email, name, picture_url, role)
-                   VALUES (?, ?, ?, ?)''',
-                (email_lower, name, picture_url, role)
-            )
-            user_id = cursor.lastrowid
-
-        conn.commit()
-
-    return {
-        'id': user_id,
-        'email': email_lower,
-        'name': name,
-        'picture': picture_url,
-        'role': role,
-    }
-
-
-# تُعيد جميع المستخدمين مرتّبين تنازلياً حسب تاريخ التسجيل (للوحة الإدارة).
-def list_all_users():
+# تُعيد جميع الحجوزات مرتّبة تنازلياً حسب تاريخ الإنشاء (للوحة الإدارة).
+def list_all_bookings():
     with sqlite3.connect(DB_PATH) as conn:
         conn.row_factory = sqlite3.Row
         rows = conn.execute(
-            '''SELECT id, email, name, picture_url, role, created_at
-               FROM users
+            '''SELECT id, full_name, phone, region, payment_method,
+                      deposit_status, created_at
+               FROM bookings
                ORDER BY datetime(created_at) DESC'''
         ).fetchall()
     return [dict(r) for r in rows]
 
 
 # ----------------------------------------------------------------------
-# مزخرفات الحماية — login_required و admin_required
+# حماية لوحة الإدارة بكلمة مرور (HTTP Basic Auth)
 # ----------------------------------------------------------------------
 
-# تُلزم الزائر بتسجيل الدخول قبل الوصول لأيّ Route محميّ.
-def login_required(view):
-    @wraps(view)
-    def wrapper(*args, **kwargs):
-        if not session.get('user'):
-            return redirect(url_for('login'))
-        return view(*args, **kwargs)
-    return wrapper
+# تتحقّق من أنّ الزائر أرسل كلمة المرور الصحيحة في رأس Authorization.
+def is_admin_authenticated():
+    if not ADMIN_PASSWORD:
+        return False
+    auth = request.authorization
+    if not auth or not auth.password:
+        return False
+    return auth.password == ADMIN_PASSWORD
 
 
-# تُلزم بدور admin — وإلّا تُعيد 403 برسالة عربية مفهومة.
+# مزخرف يحمي أيّ Route من الزوّار غير المصادقين — يُظهر نافذة الدخول الأصليّة.
 def admin_required(view):
     @wraps(view)
     def wrapper(*args, **kwargs):
-        user = session.get('user')
-        if not user:
-            return redirect(url_for('login'))
-        if user.get('role') != 'admin':
-            return render_template('403.html'), 403
+        if not is_admin_authenticated():
+            return Response(
+                'يلزم إدخال كلمة المرور للوصول إلى لوحة الإدارة.',
+                401,
+                {'WWW-Authenticate': 'Basic realm="ملمس · لوحة الإدارة"'},
+            )
         return view(*args, **kwargs)
     return wrapper
-
-
-# يُتاح متغيّر `current_user` تلقائياً في كلّ القوالب (templates).
-@app.context_processor
-def inject_user():
-    return {'current_user': session.get('user')}
 
 
 # ----------------------------------------------------------------------
@@ -281,58 +204,15 @@ def process_booking():
 
 
 # ----------------------------------------------------------------------
-# مسارات تسجيل الدخول بـ Google OAuth
+# لوحة الإدارة — محميّة بكلمة مرور
 # ----------------------------------------------------------------------
 
-# يُحوّل الزائر إلى صفحة Google لتسجيل الدخول بحساب موحّد.
-@app.route('/login')
-def login():
-    redirect_uri = url_for('callback', _external=True)
-    return oauth.google.authorize_redirect(redirect_uri)
-
-
-# المسار الذي يعود إليه Google بعد موافقة المستخدم — يُنشئ الجلسة.
-@app.route('/auth/callback')
-def callback():
-    try:
-        token = oauth.google.authorize_access_token()
-        userinfo = token.get('userinfo') or oauth.google.userinfo()
-        if not userinfo or not userinfo.get('email'):
-            return render_template('403.html'), 400
-
-        user = upsert_user(
-            email=userinfo['email'],
-            name=userinfo.get('name', ''),
-            picture_url=userinfo.get('picture', ''),
-        )
-        session['user'] = user
-        return redirect(url_for('index'))
-
-    except Exception as error:
-        return jsonify({
-            'success': False,
-            'message': 'تعذّر تسجيل الدخول عبر Google. يُرجى المحاولة لاحقاً.',
-            'error_detail': str(error),
-        }), 500
-
-
-# يُلغي الجلسة ويُعيد الزائر للصفحة الرئيسية.
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('index'))
-
-
-# ----------------------------------------------------------------------
-# لوحة الإدارة — للمدراء فقط
-# ----------------------------------------------------------------------
-
-# تعرض جدول جميع المستخدمين المسجّلين — للمدراء حصراً.
+# تعرض جدول جميع الحجوزات — للناشر فقط بعد إدخال كلمة المرور.
 @app.route('/admin')
 @admin_required
 def admin_panel():
-    users = list_all_users()
-    return render_template('admin.html', users=users)
+    bookings = list_all_bookings()
+    return render_template('admin.html', bookings=bookings)
 
 
 # ----------------------------------------------------------------------

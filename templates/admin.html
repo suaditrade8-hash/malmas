@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكّم · ملمس</title>
+    <title>لوحة الحجوزات · ملمس</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -14,57 +14,56 @@
     <header class="top-bar">
         <div class="top-bar-inner">
             <a href="{{ url_for('index') }}" class="brand-link">ملمس</a>
-            <div class="user-chip">
-                {% if current_user.picture %}
-                    <img src="{{ current_user.picture }}" alt="">
-                {% endif %}
-                <span class="user-name">{{ current_user.name }}</span>
-                <span class="badge-admin">👑 ناشر</span>
-                <a href="{{ url_for('logout') }}" class="link-logout">خروج</a>
-            </div>
+            <span class="badge-admin">👑 لوحة الناشر</span>
         </div>
     </header>
 
     <main class="admin-main">
-        <h1 class="admin-title">لوحة التحكّم</h1>
-        <p class="admin-sub">جميع المستخدمين الذين سجّلوا الدخول إلى ملمس · {{ users|length }} مستخدم</p>
+        <h1 class="admin-title">لوحة الحجوزات</h1>
+        <p class="admin-sub">جميع حجوزات هديّة العقيقة — مرتّبة من الأحدث · {{ bookings|length }} حجزاً</p>
 
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>الصورة</th>
                         <th>الاسم</th>
-                        <th>البريد الإلكتروني</th>
-                        <th>الدور</th>
-                        <th>تاريخ التسجيل</th>
+                        <th>الجوّال</th>
+                        <th>المنطقة</th>
+                        <th>طريقة الدفع</th>
+                        <th>حالة العربون</th>
+                        <th>تاريخ الحجز</th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for u in users %}
+                {% for b in bookings %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td>{{ b.id }}</td>
+                        <td>{{ b.full_name }}</td>
+                        <td class="email">{{ b.phone }}</td>
+                        <td>{{ b.region }}</td>
                         <td>
-                            {% if u.picture_url %}
-                                <img src="{{ u.picture_url }}" class="row-avatar" alt="">
+                            {% if b.payment_method == 'mada' %}
+                                <span class="role-pill user">مدى</span>
+                            {% elif b.payment_method == 'visa' %}
+                                <span class="role-pill user">فيزا</span>
+                            {% elif b.payment_method == 'apple_pay' %}
+                                <span class="role-pill user">Apple Pay</span>
                             {% else %}
-                                <span class="row-avatar fallback">{{ u.name[0] if u.name else '?' }}</span>
+                                <span class="role-pill user">{{ b.payment_method }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ u.name or '—' }}</td>
-                        <td class="email">{{ u.email }}</td>
                         <td>
-                            {% if u.role == 'admin' %}
-                                <span class="role-pill admin">👑 ناشر</span>
+                            {% if b.deposit_status == 'reserved' %}
+                                <span class="role-pill admin">محجوز</span>
                             {% else %}
-                                <span class="role-pill user">مستخدم</span>
+                                <span class="role-pill user">{{ b.deposit_status }}</span>
                             {% endif %}
                         </td>
-                        <td class="date">{{ u.created_at }}</td>
+                        <td class="date">{{ b.created_at }}</td>
                     </tr>
                 {% else %}
-                    <tr><td colspan="6" class="empty">لا يوجد مستخدمون مسجّلون بعد.</td></tr>
+                    <tr><td colspan="7" class="empty">لا يوجد حجوزات بعد. شارك الرابط في رسائل الإطلاق العشر.</td></tr>
                 {% endfor %}
                 </tbody>
             </table>

@@ -15,31 +15,7 @@
     <header class="top-bar">
         <div class="top-bar-inner">
             <a href="{{ url_for('index') }}" class="brand-link">ملمس</a>
-            {% if current_user %}
-                <div class="user-chip">
-                    {% if current_user.picture %}
-                        <img src="{{ current_user.picture }}" alt="">
-                    {% else %}
-                        <span class="avatar-fallback">{{ current_user.name[0] if current_user.name else 'م' }}</span>
-                    {% endif %}
-                    <span class="user-name">{{ current_user.name or 'مستخدم' }}</span>
-                    {% if current_user.role == 'admin' %}
-                        <span class="badge-admin">👑 ناشر</span>
-                        <a href="{{ url_for('admin_panel') }}" class="link-admin">لوحة التحكّم</a>
-                    {% endif %}
-                    <a href="{{ url_for('logout') }}" class="link-logout">خروج</a>
-                </div>
-            {% else %}
-                <a href="{{ url_for('login') }}" class="btn-google">
-                    <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
-                        <path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-                        <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-                    </svg>
-                    دخول بـ Google
-                </a>
-            {% endif %}
+            <a href="{{ url_for('index') }}" class="top-bar-cta">احجزي الآن ←</a>
         </div>
     </header>
 
@@ -55,8 +31,8 @@
                 قبل أن تصنع 1000 قطعة وتراهن — اقبضي 20 قراراً حقيقياً بـ20 ريال عربون.
                 قرار «صنع/لا تصنع» مبنيّ على دفع فعليّ، لا على نوايا.
             </p>
-            <a href="{{ url_for('login') }}" class="cta-gold">
-                {% if current_user %}جرّبي الحجز الآن{% else %}دخول بـ Google لتجربة الحجز{% endif %} ←
+            <a href="{{ url_for('index') }}" class="cta-gold">
+                احجزي بـ20 ريالاً مستردّة كاملاً ←
             </a>
             <div class="hero-meta">
                 <span>✦ 14 يوماً اختبار</span>
@@ -147,8 +123,8 @@
         <div class="block-inner">
             <h2>جرّبي الحجز اليوم — قبل أن تنتهي نافذة الاختبار</h2>
             <p>14 يوماً فقط. 20 ريال عربون مسترد كاملاً. صفر مخاطرة. كامل الصدق.</p>
-            <a href="{{ url_for('login') }}" class="cta-gold large">
-                {% if current_user %}ابدئي الحجز الآن{% else %}دخول بـ Google والبدء{% endif %} ←
+            <a href="{{ url_for('index') }}" class="cta-gold large">
+                ابدئي الحجز الآن ←
             </a>
         </div>
     </section>
