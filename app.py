@@ -12,6 +12,7 @@ from flask import (
     Flask, render_template, request, jsonify,
     session, redirect, url_for, abort,
 )
+from werkzeug.middleware.proxy_fix import ProxyFix
 from authlib.integrations.flask_client import OAuth
 
 # تحميل ملفّ .env محلّياً (يُتجاهل بصمت إن لم يكن مثبّتاً في الإنتاج).
@@ -28,6 +29,12 @@ except ImportError:
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-only-change-in-production')
+
+# Render يضع التطبيق خلف reverse proxy — نطلب من Flask احترام X-Forwarded-Proto
+# حتى يولّد روابط https:// (مطلوبة لمطابقة redirect URI في Google OAuth).
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_for=1)
+if os.environ.get('RENDER'):
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 # مسار قاعدة البيانات بصيغة مطلقة — يعمل محلّياً وعلى Render معاً.
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data.db')
