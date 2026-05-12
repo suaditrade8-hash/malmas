@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَلْمَس · مولّد Listings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --surface: #FFFFFF;
+    --navy: #1E2A44;
+    --navy-deep: #14203A;
+    --gold: #C9A961;
+    --gold-soft: #E5D5A8;
+    --gold-deep: #A88841;
+    --sage: #8B9A7E;
+    --sage-soft: #DCE3D3;
+    --sage-deep: #5F7050;
+    --rose: #C97B7B;
+    --rose-soft: #F0DADA;
+    --rose-deep: #8E4A4A;
+    --amber: #D69A4C;
+    --amber-soft: #F5E2C0;
+    --muted: #6B6F7A;
+    --ink: #2A2E36;
+    --border: #E8E2D5;
+    --border-soft: #F0EBE0;
+    --shade: #F5F1E8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); color: var(--ink); font-family: 'Tajawal', system-ui, sans-serif; font-size: 15px; line-height: 1.65; }
+  .num { font-family: 'Inter', sans-serif; font-feature-settings: "tnum" 1; direction: ltr; unicode-bidi: isolate; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  header { display: flex; flex-direction: column; gap: 8px; padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .wordmark { font-family: 'Amiri', serif; font-size: 38px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+  .divider { color: var(--gold); font-size: 22px; }
+  .page-title { font-size: 18px; font-weight: 500; color: var(--ink); }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .tag { display: inline-block; background: var(--shade); color: var(--navy); font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 4px; margin-inline-start: 8px; }
+
+  /* Layout: two-column */
+  .layout { display: grid; grid-template-columns: 420px 1fr; gap: 24px; }
+  @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; }
+  .panel-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; gap: 8px; }
+  .panel-title .icon { color: var(--gold); }
+
+  .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+  .field label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .field .hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .field input, .field select, .field textarea { font-family: inherit; font-size: 14px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--ink); width: 100%; resize: vertical; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { font-family: inherit; font-size: 12px; padding: 5px 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); color: var(--ink); cursor: pointer; transition: all 0.15s; }
+  .pill:hover { border-color: var(--gold); background: var(--shade); }
+  .pill.active { background: var(--navy); color: var(--surface); border-color: var(--navy); }
+
+  .btn { font-family: inherit; font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary { background: var(--navy); color: var(--surface); border-color: var(--navy); width: 100%; justify-content: center; }
+  .btn-primary:hover { background: var(--navy-deep); }
+  .btn-primary:disabled { background: var(--muted); border-color: var(--muted); cursor: not-allowed; opacity: 0.6; }
+  .btn-ghost { background: transparent; color: var(--navy); border-color: var(--border); }
+  .btn-ghost:hover { background: var(--shade); border-color: var(--gold); }
+  .btn-icon { background: transparent; border: none; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 13px; transition: all 0.15s; }
+  .btn-icon:hover { background: var(--shade); color: var(--navy); }
+
+  /* Output panel */
+  .output-empty { text-align: center; padding: 60px 24px; color: var(--muted); }
+  .output-empty .empty-icon { font-family: 'Amiri', serif; font-size: 56px; color: var(--gold-soft); margin-bottom: 12px; }
+
+  .loading { text-align: center; padding: 60px 24px; color: var(--muted); }
+  .loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .listing-section { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid var(--border-soft); }
+  .listing-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .listing-label { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .listing-label-text { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: none; }
+  .listing-label-meta { font-size: 11px; color: var(--muted); font-family: 'Inter', sans-serif; }
+  .listing-text { font-size: 15px; color: var(--ink); line-height: 1.7; padding: 14px 16px; background: var(--shade); border-radius: 6px; border-inline-start: 3px solid var(--gold); white-space: pre-wrap; word-wrap: break-word; }
+  .listing-text.english { direction: ltr; text-align: left; font-family: 'Inter', sans-serif; font-size: 14px; }
+  .listing-text.keywords { font-family: 'Inter', sans-serif; font-size: 13px; direction: ltr; text-align: left; }
+  .listing-text ul { list-style: none; padding: 0; margin: 0; }
+  .listing-text li { padding: 6px 0; position: relative; padding-inline-start: 20px; }
+  .listing-text li::before { content: '◆'; color: var(--gold); position: absolute; inset-inline-start: 0; font-size: 10px; top: 9px; }
+
+  .copy-btn { font-size: 11px; padding: 3px 10px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .copy-btn:hover { border-color: var(--gold); color: var(--navy); }
+  .copy-btn.copied { background: var(--sage-soft); border-color: var(--sage); color: var(--sage-deep); }
+
+  /* Banned word warning */
+  .warning { background: var(--rose-soft); border-inline-start: 3px solid var(--rose); padding: 12px 16px; margin-bottom: 16px; border-radius: 4px; font-size: 13px; color: var(--rose-deep); }
+  .warning strong { display: block; margin-bottom: 4px; }
+
+  .compliance-banner { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--sage-soft); border-radius: 6px; margin-bottom: 18px; font-size: 13px; color: var(--sage-deep); border-inline-start: 3px solid var(--sage); }
+  .compliance-banner.warn { background: var(--rose-soft); color: var(--rose-deep); border-inline-start-color: var(--rose); }
+
+  /* Library */
+  .library { margin-top: 28px; }
+  .library-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .library-title { font-size: 16px; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 8px; }
+  .library-title .icon { color: var(--gold); }
+  .library-table { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--shade); }
+  th { text-align: start; padding: 12px 14px; font-size: 12px; font-weight: 700; color: var(--navy); border-bottom: 1px solid var(--border); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border-soft); font-size: 13px; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--shade); }
+  .empty-lib { text-align: center; padding: 40px 16px; color: var(--muted); font-size: 14px; }
+
+  .platform-pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; background: var(--shade); color: var(--navy); }
+
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 13px; }
+  footer .quote { font-family: 'Amiri', serif; font-size: 15px; color: var(--gold); }
+
+  @media (max-width: 880px) {
+    .wrap { padding: 20px 16px 60px; }
+    .wordmark { font-size: 30px; }
+    .field-row { grid-template-columns: 1fr; }
+    .lib-filters { flex-direction: column; align-items: stretch !important; }
+    .lib-filters select, .lib-filters input { width: 100%; }
+  }
+
+  /* === Added: toast, modal, library filters, copy-all === */
+  .toast-wrap { position: fixed; top: 24px; inset-inline-end: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .toast {
+    background: var(--navy); color: var(--surface);
+    padding: 12px 18px; border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(20, 32, 58, 0.25);
+    font-size: 14px; font-weight: 500;
+    pointer-events: auto;
+    border-inline-start: 3px solid var(--gold);
+    max-width: 360px;
+  }
+  .toast.success { border-inline-start-color: var(--sage); }
+  .toast.error { background: var(--rose-deep); border-inline-start-color: var(--rose-soft); }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20, 32, 58, 0.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--surface); border-radius: 12px; padding: 28px; max-width: 460px; width: 100%; }
+  .modal h3 { font-family: 'Amiri', serif; font-size: 22px; color: var(--navy); margin-bottom: 8px; }
+  .modal p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+  .lib-filters {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .lib-filters select, .lib-filters input {
+    font-family: inherit; font-size: 13px; padding: 7px 12px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--ink);
+  }
+  .lib-filters .filter-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .lib-filters .clear-filters {
+    font-size: 12px; padding: 6px 12px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); border-radius: 6px; cursor: pointer;
+  }
+  .lib-filters .clear-filters:hover { border-color: var(--gold); color: var(--navy); }
+
+  .toolbar-btn {
+    font-family: inherit; font-size: 13px; padding: 8px 14px;
+    border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--navy); font-weight: 500;
+  }
+  .toolbar-btn:hover { border-color: var(--gold); background: var(--shade); }
+  .hidden-input { display: none; }
+
+  /* Copy-all bar */
+  .copy-all-bar {
+    background: var(--shade); border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+    border-inline-start: 3px solid var(--gold);
+  }
+  .copy-all-bar .label { font-size: 13px; color: var(--ink); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <span class="wordmark">مَلْمَس</span>
+      <span class="divider">◆</span>
+      <span class="page-title">مولّد Listings</span>
+      <span class="tag">Noon · Amazon KSA · ثنائي اللغة</span>
+    </div>
+    <p class="subtitle">عنوان عربي يسبق الإنجليزي · نبرة دافئة أمومية · فلتر تلقائي للكلمات الممنوعة على Noon.</p>
+  </header>
+
+  <div class="layout">
+
+    <section class="panel">
+      <div class="panel-title"><span class="icon">◆</span> بيانات المنتج</div>
+
+      <div class="field">
+        <label>SKU جاهز (اختصار):</label>
+        <div class="pill-group" id="sku-pills"></div>
+      </div>
+
+      <div class="field">
+        <label for="i-name">اسم المنتج (عربي)</label>
+        <input id="i-name" type="text" placeholder="مثال: سجادة الحروف الصديقة">
+      </div>
+
+      <div class="field">
+        <label for="i-name-en">اسم المنتج (إنجليزي)</label>
+        <input id="i-name-en" type="text" placeholder="Friendly Arabic Letters Mat" dir="ltr">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="i-category">الفئة</label>
+          <select id="i-category">
+            <option>منتجات أطفال · إكسسوارات</option>
+            <option>منتجات أطفال · ألعاب تعليمية</option>
+            <option>منتجات أطفال · هدايا</option>
+            <option>منتجات أطفال · رضاعة</option>
+            <option>منتجات أطفال · سفر</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="i-platform">المنصة</label>
+          <select id="i-platform">
+            <option value="noon">Noon KSA</option>
+            <option value="amazon">Amazon KSA</option>
+            <option value="both">Noon + Amazon</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="i-features">المميزات الرئيسية (نقطة في كل سطر)</label>
+        <textarea id="i-features" rows="5" placeholder="رغوة XPE بسماكة 2سم
+طباعة الحروف العربية مع الأنماط الإسلامية
+خالٍ من BPA والمواد الضارة
+مقاوم للماء وقابل للطي
+شهادة EN71 لسلامة الأطفال"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="i-keywords">كلمات مفتاحية مستهدفة (بحث الأمهات السعوديات)</label>
+        <textarea id="i-keywords" rows="3" placeholder="سجادة أطفال، سجادة حروف عربية، حصيرة أطفال، تعليم الحروف، هدية مولود"></textarea>
+        <span class="hint">اكتب كما تبحث الأمهات فعلاً — لا كما يكتب الإنجليز.</span>
+      </div>
+
+      <div class="field">
+        <label for="i-audience">الجمهور المستهدف</label>
+        <select id="i-audience">
+          <option value="newborn">أمهات مواليد (0-12 شهر)</option>
+          <option value="toddler">أمهات أطفال 1-3 سنوات</option>
+          <option value="preschool">أمهات أطفال 3-6 سنوات</option>
+          <option value="gift">جمهور هدايا (عقيقة، baby shower)</option>
+          <option value="general">جمهور عام للأمهات</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="i-occasion">مناسبة تسويقية (اختياري)</label>
+        <select id="i-occasion">
+          <option value="">— بدون —</option>
+          <option value="ramadan">رمضان</option>
+          <option value="eid">عيد الفطر / الأضحى</option>
+          <option value="aqeeqa">عقيقة المولود</option>
+          <option value="back-to-school">العودة للمدارس</option>
+          <option value="white-friday">الجمعة البيضاء</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" id="generate-btn">
+        <span id="btn-label">توليد Listing</span>
+      </button>
+
+      <div style="margin-top:14px; font-size:11px; color: var(--muted); line-height:1.5;">
+        المخرجات تخضع لقواعد مَلْمَس: لا "ثوري"، لا "الأفضل عالمياً"، لا "علاج" أو وعود طبية. النبرة دافئة أمومية، لا مبالغة تسويقية.
+      </div>
+    </section>
+
+    <section class="panel" style="min-height:500px;">
+      <div class="panel-title"><span class="icon">◆</span> Listing المُولَّد</div>
+      <div id="output"></div>
+    </section>
+
+  </div>
+
+  <div class="library">
+    <div class="library-header">
+      <div class="library-title"><span class="icon">◆</span> Listings المحفوظة</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="toolbar-btn" id="export-btn">⇣ CSV</button>
+        <button class="toolbar-btn" id="export-json-btn">⇣ JSON</button>
+        <button class="toolbar-btn" id="import-json-btn">⇡ استيراد</button>
+        <input type="file" id="import-file" class="hidden-input" accept="application/json,.json">
+      </div>
+    </div>
+
+    <div class="lib-filters">
+      <span class="filter-label">بحث:</span>
+      <input id="filter-search" type="search" placeholder="اسم المنتج أو عنوان…" style="min-width: 220px;">
+      <span class="filter-label">المنصة:</span>
+      <select id="filter-platform">
+        <option value="">الكل</option>
+        <option value="noon">Noon KSA</option>
+        <option value="amazon">Amazon KSA</option>
+        <option value="both">Noon + Amazon</option>
+      </select>
+      <span class="filter-label">الجمهور:</span>
+      <select id="filter-audience">
+        <option value="">الكل</option>
+        <option value="newborn">مواليد 0-12 شهر</option>
+        <option value="toddler">1-3 سنوات</option>
+        <option value="preschool">3-6 سنوات</option>
+        <option value="gift">هدايا</option>
+        <option value="general">عام</option>
+      </select>
+      <button class="clear-filters" id="clear-filters">× إفراغ</button>
+    </div>
+
+    <div class="library-table">
+      <table>
+        <thead>
+          <tr>
+            <th>الاسم</th>
+            <th>الفئة</th>
+            <th>المنصة</th>
+            <th>الجمهور</th>
+            <th>التاريخ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="library-rows"></tbody>
+      </table>
+      <div class="empty-lib" id="empty-lib">احفظ Listing مُولَّداً لتجد جميع نسخك هنا.</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="quote">لأن كل لمسة تهم</div>
+    <div style="margin-top:6px;">العنوان العربي يسبق · النبرة الأمومية لا تُساوم</div>
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <h3 id="confirm-title">—</h3>
+    <p id="confirm-message">—</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirm-cancel">إلغاء</button>
+      <button class="btn btn-primary" id="confirm-ok" style="width: auto;">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ============ Storage adapter (localStorage-backed) ============
+window.storage = (function () {
+  return {
+    async get(key) {
+      try { const v = localStorage.getItem(key); return v == null ? null : { value: v }; }
+      catch { return null; }
+    },
+    async set(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { console.error('storage.set failed', e); }
+    },
+    async delete(key) {
+      try { localStorage.removeItem(key); } catch { }
+    },
+    async list(prefix) {
+      const keys = [];
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(prefix)) keys.push(k);
+        }
+      } catch { }
+      return { keys };
+    }
+  };
+})();
+
+// ============ SKU Presets ============
+const SKU_PRESETS = {
+  sku1: {
+    name: 'حقيبة منظّم العربة',
+    nameEn: 'Stroller Organizer Bag',
+    category: 'منتجات أطفال · إكسسوارات',
+    features: 'حاملات أكواب 9سم تناسب القوارير الكبيرة\nسحّابات YKK مقاومة وطويلة الأمد\nشاشة TPU لمسية تتسع للهاتف بالغطاء\nأشرطة سيليكون مانعة للانزلاق\nخياطة مزدوجة مع تثبيت في نقاط الإجهاد\nقماش بوليستر 600D مقاوم للماء',
+    keywords: 'منظم عربة أطفال، حقيبة عربة، إكسسوارات عربات الأطفال، منظم تخزين عربة',
+    audience: 'toddler'
+  },
+  sku2: {
+    name: 'وسادة الرضاعة الآمنة',
+    nameEn: 'Safe Nursing Pillow',
+    category: 'منتجات أطفال · رضاعة',
+    features: 'حاجز أمان 14سم يمنع انزلاق الطفل\nحشوة ذاكرية تحافظ على شكلها\nغطاء قطن 100% قابل للغسل\nسحّاب مخفي حماية للطفل\nعرض 28 بوصة يناسب جميع المقاسات\nاستخدام متعدد المراحل من الرضاعة للجلوس',
+    keywords: 'وسادة رضاعة، وسادة إرضاع، وسادة الأم والطفل، وسادة دعم الرضاعة',
+    audience: 'newborn'
+  },
+  sku3: {
+    name: 'سجادة الحروف الصديقة',
+    nameEn: 'Friendly Arabic Letters Mat',
+    category: 'منتجات أطفال · ألعاب تعليمية',
+    features: 'الحروف الأبجدية العربية بتصميم أنيق\nأنماط هندسية إسلامية أصيلة\nرغوة XPE بسماكة 2سم مناسبة للأرضيات الرخامية\nخالٍ من المواد الضارة BPA-Free\nمقاوم للماء وسهل التنظيف\nقابل للطي للتخزين والسفر\nشهادة EN71 لسلامة الأطفال',
+    keywords: 'سجادة أطفال، سجادة حروف عربية، حصيرة أطفال، تعليم الحروف، سجادة لعب',
+    audience: 'preschool'
+  },
+  sku4: {
+    name: 'هدية العقيقة الفاخرة',
+    nameEn: 'Premium Aqeeqa Gift Bundle',
+    category: 'منتجات أطفال · هدايا',
+    features: 'صندوق هدايا فاخر بشعار ذهبي\nشريط ساتان وبطاقة تهنئة مذهّبة\nيحتوي منظم عربة + وسادة رضاعة + سجادة صغيرة\nتغليف يحافظ على عرض المنتجات\nختم شمعي ذهبي على المغلف\nتجربة فتح أنيقة تستحق التصوير',
+    keywords: 'هدية عقيقة، هدية مولود، هدية بيبي شور، صندوق هدايا أطفال، هدية رضيع',
+    audience: 'gift'
+  },
+  sku5: {
+    name: 'حقيبة ظهر الحفاضات',
+    nameEn: 'Diaper Backpack',
+    category: 'منتجات أطفال · سفر',
+    features: '16+ جيب منظّم بدقة\nثلاثة جيوب معزولة للزجاجات\nموزّع مناديل أمامي للوصول بيد واحدة\nسجادة تغيير حفاض كبيرة قابلة للطي\nأشرطة كتف مبطّنة مع شبكة تهوية\nتصميم محايد يناسب الأب والأم',
+    keywords: 'حقيبة حفاضات، حقيبة ظهر مولود، حقيبة بيبي، شنطة أطفال',
+    audience: 'newborn'
+  },
+  sku6: {
+    name: 'مصباح الليل + صوت',
+    nameEn: 'Night Light + Sound',
+    category: 'منتجات أطفال · إكسسوارات',
+    features: 'إضاءة دافئة قابلة للتعديل\nأصوات هادئة مهدّئة للنوم\nمؤقّت ذكي يطفئ تلقائياً\nتصميم ناعم يلائم غرفة المولود\nبطارية تدوم ساعات طويلة',
+    keywords: 'مصباح غرفة الطفل، إضاءة ليلية، مهدّئ نوم رضيع، أصوات الرضع',
+    audience: 'newborn'
+  },
+  sku7: {
+    name: 'طقم تغذية سيليكون',
+    nameEn: 'Silicone Feeding Kit',
+    category: 'منتجات أطفال · رضاعة',
+    features: 'سيليكون آمن خالٍ من BPA\nصحن وكوب وملعقة بتصميم مريح\nقاعدة مانعة للانزلاق\nيناسب غسالة الصحون والميكروويف\nألوان دافئة تشجّع الطفل على الأكل',
+    keywords: 'طقم تغذية، سيليكون أطفال، صحن طفل، أدوات أكل رضيع',
+    audience: 'toddler'
+  },
+  sku8: {
+    name: 'الدُمى الناعمة',
+    nameEn: 'Plush Toys',
+    category: 'منتجات أطفال · ألعاب تعليمية',
+    features: 'قماش قطني فاخر ناعم اللمس\nحشوة آمنة قابلة للغسل\nخياطة مزدوجة قوية\nتصميم خليجي مميّز\nخالية من الأجزاء الصغيرة الخطرة',
+    keywords: 'دُمى أطفال، ألعاب قماشية، دمى ناعمة، لعبة هادئة',
+    audience: 'toddler'
+  }
+};
+
+// ============ Banned words (Noon/Amazon KSA + brand rules) ============
+const BANNED_WORDS_AR = [
+  'ثوري', 'ثورية', 'الأفضل عالمياً', 'الأفضل في العالم', 'الأرخص',
+  'علاج', 'يعالج', 'شفاء', 'يشفي', 'دواء',
+  'الأول', 'رقم 1', 'لا منافس', '#1',
+  'مضمون 100%', 'ضمان شفاء', 'معجزة',
+  'الأقوى', 'الأسرع', 'الأذكى'
+];
+const BANNED_WORDS_EN = [
+  'revolutionary', 'best in the world', 'world\'s best', 'cure', 'cures', 'heal', 'heals',
+  '#1', 'number one', 'no competition', 'cheapest',
+  '100% guaranteed', 'miracle', 'medical-grade'
+];
+
+// ============ State ============
+let library = [];
+let currentSku = null;
+let lastGenerated = null;
+let libFilters = { search: '', platform: '', audience: '' };
+
+// ============ Toast ============
+function toast(message, type = 'info', durationMs = 2600) {
+  const wrap = document.getElementById('toast-wrap');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'success' ? ' success' : type === 'error' ? ' error' : '');
+  el.textContent = message;
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.25s';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 280);
+  }, durationMs);
+}
+
+// ============ Confirm modal ============
+function confirmModal(title, message, okText = 'تأكيد') {
+  return new Promise(resolve => {
+    const modal = document.getElementById('confirm-modal');
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
+    const okBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
+    okBtn.textContent = okText;
+    modal.classList.add('show');
+    setTimeout(() => okBtn.focus(), 30);
+    const onOk = () => { cleanup(); resolve(true); };
+    const onCancel = () => { cleanup(); resolve(false); };
+    const onKey = (e) => {
+      if (e.key === 'Escape') onCancel();
+      else if (e.key === 'Enter') onOk();
+    };
+    function cleanup() {
+      modal.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      document.removeEventListener('keydown', onKey);
+    }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    document.addEventListener('keydown', onKey);
+  });
+}
+
+// ============ Storage ============
+async function loadLibrary() {
+  try {
+    const list = await window.storage.list('listing:lib:');
+    if (list && list.keys) {
+      const items = await Promise.all(
+        list.keys.map(async k => {
+          try {
+            const r = await window.storage.get(k);
+            return r ? JSON.parse(r.value) : null;
+          } catch { return null; }
+        })
+      );
+      library = items.filter(Boolean).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+    }
+  } catch (e) { library = []; }
+  renderLibrary();
+}
+
+async function persistListing(l) {
+  try { await window.storage.set('listing:lib:' + l.id, JSON.stringify(l)); } catch (e) { }
+}
+
+async function removeListing(id) {
+  try { await window.storage.delete('listing:lib:' + id); } catch (e) { }
+}
+
+// ============ SKU Pills ============
+function renderSkuPills() {
+  const container = document.getElementById('sku-pills');
+  const labels = [
+    { key: 'sku1', label: 'SKU 1' },
+    { key: 'sku2', label: 'SKU 2' },
+    { key: 'sku3', label: 'SKU 3' },
+    { key: 'sku4', label: 'SKU 4' },
+    { key: 'sku5', label: 'SKU 5' },
+    { key: 'sku6', label: 'SKU 6' },
+    { key: 'sku7', label: 'SKU 7' },
+    { key: 'sku8', label: 'SKU 8' }
+  ];
+  container.innerHTML = labels.map(l =>
+    `<button class="pill" data-sku="${l.key}">${l.label}</button>`
+  ).join('') + '<button class="pill" data-sku="">مخصّص</button>';
+  container.querySelectorAll('.pill').forEach(p => {
+    p.addEventListener('click', () => applySku(p.dataset.sku));
+  });
+}
+
+function applySku(key) {
+  document.querySelectorAll('#sku-pills .pill').forEach(p => p.classList.toggle('active', p.dataset.sku === key));
+  currentSku = key;
+  if (!key) return;
+  const s = SKU_PRESETS[key];
+  if (!s) return;
+  document.getElementById('i-name').value = s.name;
+  document.getElementById('i-name-en').value = s.nameEn;
+  document.getElementById('i-category').value = s.category;
+  document.getElementById('i-features').value = s.features;
+  document.getElementById('i-keywords').value = s.keywords;
+  document.getElementById('i-audience').value = s.audience;
+}
+
+// ============ Compliance check ============
+function checkBannedWords(text) {
+  const lower = (text || '').toLowerCase();
+  const hits = [];
+  for (const w of BANNED_WORDS_AR) {
+    if (text.includes(w)) hits.push(w);
+  }
+  for (const w of BANNED_WORDS_EN) {
+    if (lower.includes(w.toLowerCase())) hits.push(w);
+  }
+  return [...new Set(hits)];
+}
+
+// ============ Claude API call ============
+async function generateListing() {
+  const name = document.getElementById('i-name').value.trim();
+  if (!name) { toast('الرجاء إدخال اسم المنتج بالعربية.', 'error'); return; }
+  const nameEn = document.getElementById('i-name-en').value.trim();
+  const category = document.getElementById('i-category').value;
+  const platform = document.getElementById('i-platform').value;
+  const features = document.getElementById('i-features').value.trim();
+  const keywords = document.getElementById('i-keywords').value.trim();
+  const audience = document.getElementById('i-audience').value;
+  const occasion = document.getElementById('i-occasion').value;
+
+  const audienceLabels = {
+    newborn: 'أمهات مواليد 0-12 شهر',
+    toddler: 'أمهات أطفال 1-3 سنوات',
+    preschool: 'أمهات أطفال 3-6 سنوات',
+    gift: 'مشترو هدايا للعقيقة وbaby shower',
+    general: 'الأمهات السعوديات بشكل عام'
+  };
+
+  const occasionLabels = {
+    'ramadan': 'رمضان', 'eid': 'العيد', 'aqeeqa': 'العقيقة',
+    'back-to-school': 'العودة للمدارس', 'white-friday': 'الجمعة البيضاء'
+  };
+
+  const platformLabel = platform === 'noon' ? 'Noon KSA' : platform === 'amazon' ? 'Amazon KSA' : 'Noon + Amazon KSA';
+
+  const prompt = `أنت كاتب محتوى تسويقي محترف لعلامة مَلْمَس (Malmas) — علامة سعودية فاخرة لمنتجات الأطفال، شعارها "لأن كل لمسة تهم". الهوية البصرية: رمل دافئ، مريمية، وردي خفيف، ذهبي، خط عربي مطرّز.
+
+اكتب listing احترافي لمنصة ${platformLabel} لهذا المنتج، مع الالتزام الصارم بالقواعد التالية:
+
+**معلومات المنتج:**
+- الاسم بالعربية: ${name}
+${nameEn ? '- الاسم بالإنجليزية: ' + nameEn : ''}
+- الفئة: ${category}
+- الجمهور المستهدف: ${audienceLabels[audience]}
+${occasion ? '- المناسبة التسويقية: ' + occasionLabels[occasion] : ''}
+
+**المميزات الرئيسية:**
+${features}
+
+**كلمات مفتاحية مستهدفة (بحث الأمهات السعوديات):**
+${keywords}
+
+**قواعد العلامة (إلزامية):**
+1. العربية أولاً دائماً — كل قسم يبدأ بالعربية ثم الإنجليزية.
+2. النبرة: دافئة، أمومية، واثقة. لا مبالغة تسويقية ولا وعود طبية.
+3. ممنوع منعاً باتاً: كلمات مثل "ثوري"، "الأفضل عالمياً"، "علاج"، "يشفي"، "رقم 1"، "الأقوى"، "معجزة" — تخالف سياسات Noon.
+4. ربط المنتج بلحظة حياتية واقعية (مشي مع الرضيع، رضاعة هادئة، عقيقة مولود، تعلّم الحروف...).
+5. لا تستخدم أي مرجع لمنتج منافس أو علامة تجارية أخرى.
+6. الإيموجي المسموح فقط: 🤍 ✨ 🌿 — بتحفّظ شديد. ممنوع: 🔥 💯 🚀.
+7. لا وعود طبية أو ادعاءات صحية غير مدعومة.
+
+**أخرج النتيجة بصيغة JSON صرف فقط — لا تكتب أي نص خارج JSON، ولا backticks ولا markdown:**
+
+{
+  "title_ar": "عنوان عربي بين 60-120 حرف، يبدأ باسم المنتج ثم 2-3 مميزات رئيسية، يحتوي كلمات مفتاحية طبيعية",
+  "title_en": "English title 60-120 chars, mirrors the Arabic structure naturally",
+  "bullets_ar": ["نقطة 1 بالعربية تركّز على فائدة واحدة وتذكر اللحظة الحياتية", "نقطة 2", "نقطة 3", "نقطة 4", "نقطة 5"],
+  "bullets_en": ["Bullet 1 in English mirroring the Arabic with idiomatic phrasing", "Bullet 2", "Bullet 3", "Bullet 4", "Bullet 5"],
+  "description_ar": "وصف عربي 3-4 فقرات قصيرة (مجموع 150-220 كلمة). الفقرة الأولى تربط المنتج بلحظة عاطفية لأم سعودية. الثانية تشرح أهم المميزات بإيجاز. الثالثة تذكر السلامة والجودة. الرابعة (اختيارية) تتعلق بالمناسبة إن وُجدت.",
+  "description_en": "English description 3-4 short paragraphs (150-220 words total) mirroring the Arabic — same emotional arc, same key features.",
+  "backend_keywords": "8-12 كلمة مفتاحية مفصولة بفواصل، تشمل صيغ بحث متعددة للأمهات السعوديات (بدون تكرار الكلمات الموجودة في العنوان)",
+  "compliance_notes": "ملاحظة قصيرة 1-2 سطر تؤكد أن المحتوى يلتزم بقواعد Noon ولا يحتوي كلمات ممنوعة"
+}`;
+
+  setLoading(true);
+
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ prompt, max_tokens: 2400 })
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const msg = data.error || ('HTTP ' + response.status);
+      const detail = data.detail ? ' — ' + data.detail : '';
+      throw new Error(msg + detail);
+    }
+
+    const text = data.text || '';
+    const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*$/gi, '').trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch (e) {
+      // try to extract JSON block
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('لم يتم إرجاع JSON صالح من النموذج.');
+      parsed = JSON.parse(match[0]);
+    }
+
+    lastGenerated = {
+      id: 'lst_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      inputs: { name, nameEn, category, platform, features, keywords, audience, occasion },
+      output: parsed,
+      savedAt: Date.now()
+    };
+
+    renderOutput(parsed);
+  } catch (err) {
+    document.getElementById('output').innerHTML =
+      `<div class="warning"><strong>خطأ في التوليد:</strong>${escapeHtml(err.message)}</div>
+       <div style="text-align:center; color: var(--muted); padding: 20px; font-size: 13px;">
+         تأكّد من اتصالك بالإنترنت وحاول مرة أخرى. إذا تكرّر الخطأ، راجع وحدة Anthropic API.
+       </div>`;
+  } finally {
+    setLoading(false);
+  }
+}
+
+function setLoading(loading) {
+  document.getElementById('generate-btn').disabled = loading;
+  document.getElementById('btn-label').textContent = loading ? 'جارٍ التوليد...' : 'توليد Listing';
+  if (loading) {
+    document.getElementById('output').innerHTML =
+      `<div class="loading"><div class="spinner"></div><div>جارٍ توليد المحتوى بأسلوب مَلْمَس...</div></div>`;
+  }
+}
+
+// ============ Render output ============
+function renderOutput(o) {
+  // Compliance check
+  const allText = [
+    o.title_ar, o.title_en,
+    ...(o.bullets_ar || []), ...(o.bullets_en || []),
+    o.description_ar, o.description_en, o.backend_keywords
+  ].filter(Boolean).join('\n');
+  const bannedHits = checkBannedWords(allText);
+
+  const titleArLen = (o.title_ar || '').length;
+  const titleEnLen = (o.title_en || '').length;
+  const descArWords = (o.description_ar || '').split(/\s+/).filter(Boolean).length;
+  const descEnWords = (o.description_en || '').split(/\s+/).filter(Boolean).length;
+
+  const complianceBanner = bannedHits.length > 0
+    ? `<div class="compliance-banner warn"><strong>⚠ كلمات ممنوعة مُكتشفة:</strong> ${bannedHits.map(escapeHtml).join('، ')} — راجع المحتوى يدوياً قبل النشر.</div>`
+    : `<div class="compliance-banner">✓ النص يلتزم بقواعد Noon — لا كلمات ممنوعة.</div>`;
+
+  // نخزّن نصوص النسخ في كائن مُفهرس بمفتاح بدلاً من حقن JSON داخل onclick (يكسر مع العربية).
+  window.__listingCopyTexts = {
+    'title_ar': o.title_ar || '',
+    'title_en': o.title_en || '',
+    'bullets_ar': (o.bullets_ar || []).join('\n'),
+    'bullets_en': (o.bullets_en || []).join('\n'),
+    'description_ar': o.description_ar || '',
+    'description_en': o.description_en || '',
+    'backend_keywords': o.backend_keywords || ''
+  };
+
+  const saveBtn = `<button class="btn btn-ghost" id="save-lib-btn" style="margin-top:16px; width:100%; justify-content:center;">حفظ في المكتبة</button>`;
+
+  // "نسخ الكل" — يجمع كل أقسام الـ listing كنص واحد للصق في Excel / Noon dashboard.
+  const fullText = [
+    '— Title (AR) —', o.title_ar || '',
+    '', '— Title (EN) —', o.title_en || '',
+    '', '— Bullets (AR) —', ...(o.bullets_ar || []).map((b, i) => (i+1) + '. ' + b),
+    '', '— Bullets (EN) —', ...(o.bullets_en || []).map((b, i) => (i+1) + '. ' + b),
+    '', '— Description (AR) —', o.description_ar || '',
+    '', '— Description (EN) —', o.description_en || '',
+    '', '— Backend Keywords —', o.backend_keywords || ''
+  ].join('\n');
+  window.__listingFullText = fullText;
+  const copyAllBar = `<div class="copy-all-bar">
+    <span class="label">جاهز للنسخ — كل الأقسام في كتلة واحدة</span>
+    <button class="copy-btn" id="copy-all-btn">⎘ نسخ Listing كاملاً</button>
+  </div>`;
+
+  const out = document.getElementById('output');
+  out.innerHTML = complianceBanner + copyAllBar + `
+
+    <div class="listing-section">
+      <div class="listing-label">
+        <span class="listing-label-text">العنوان (عربي)</span>
+        <span class="listing-label-meta">${titleArLen} حرف</span>
+        <button class="copy-btn" data-copy-key="title_ar">نسخ</button>
+      </div>
+      <div class="listing-text">${escapeHtml(o.title_ar || '—')}</div>
+    </div>
+
+    <div class="listing-section">
+      <div class="listing-label">
+        <span class="listing-label-text">Title (English)</span>
+        <span class="listing-label-meta">${titleEnLen} chars</span>
+        <button class="copy-btn" data-copy-key="title_en">Copy</button>
+      </div>
+      <div class="listing-text english">${escapeHtml(o.title_en || '—')}</div>
+    </div>
+
+    <div class="listing-section">
+      <div class="listing-label">
+        <span class="listing-label-text">المميزات (عربي)</span>
+        <button class="copy-btn" data-copy-key="bullets_ar">نسخ</button>
+      </div>
+      <div class="listing-text">
+        <ul>${(o.bullets_ar || []).map(b => '<li>' + escapeHtml(b) + '</li>').join('')}</ul>
+      </div>
+    </div>
+
+    <div class="listing-section">
+      <div class="listing-label">
+        <span class="listing-label-text">Bullets (English)</span>
+        <button class="copy-btn" data-copy-key="bullets_en">Copy</button>
+      </div>
+      <div class="listing-text english">
+        <ul>${(o.bullets_en || []).map(b => '<li>' + escapeHtml(b) + '</li>').join('')}</ul>
+      </div>
+    </div>
+
+    <div class="listing-section">
+      <div class="listing-label">
+        <span class="listing-label-text">الوصف (عربي)</span>
+        <span class="listing-label-meta">${descArWords} كلمة</span>
+        <button class="copy-btn" data-copy-key="description_ar">نسخ</button>
+      </div>
+      <div class="listing-text">${escapeHtml(o.description_ar || '—')}</div>
+    </div>
+
+    <div class="listing-section">
+      <div class="listing-label">
+        <span class="listing-label-text">Description (English)</span>
+        <span class="listing-label-meta">${descEnWords} words</span>
+        <button class="copy-btn" data-copy-key="description_en">Copy</button>
+      </div>
+      <div class="listing-text english">${escapeHtml(o.description_en || '—')}</div>
+    </div>
+
+    <div class="listing-section">
+      <div class="listing-label">
+        <span class="listing-label-text">Backend Keywords</span>
+        <button class="copy-btn" data-copy-key="backend_keywords">نسخ</button>
+      </div>
+      <div class="listing-text keywords">${escapeHtml(o.backend_keywords || '—')}</div>
+    </div>
+
+    ${saveBtn}
+  `;
+
+  out.querySelectorAll('.copy-btn[data-copy-key]').forEach(btn => {
+    btn.addEventListener('click', () => copyText(btn, window.__listingCopyTexts[btn.dataset.copyKey] || ''));
+  });
+  const copyAllEl = out.querySelector('#copy-all-btn');
+  if (copyAllEl) copyAllEl.addEventListener('click', () => copyText(copyAllEl, window.__listingFullText || ''));
+  const saveEl = out.querySelector('#save-lib-btn');
+  if (saveEl) saveEl.addEventListener('click', saveLastGenerated);
+}
+
+async function copyText(btn, text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    const original = btn.textContent;
+    btn.classList.add('copied');
+    btn.textContent = '✓ تم النسخ';
+    setTimeout(() => { btn.classList.remove('copied'); btn.textContent = original; }, 1500);
+  } catch (e) { toast('فشل النسخ — انسخ يدوياً.', 'error'); }
+}
+
+async function saveLastGenerated() {
+  if (!lastGenerated) { toast('لا يوجد Listing لحفظه.', 'error'); return; }
+  await persistListing(lastGenerated);
+  // تحديث في المكان إن وُجد (لا تكرار)
+  const idx = library.findIndex(x => x.id === lastGenerated.id);
+  if (idx >= 0) library[idx] = lastGenerated;
+  else library.unshift(lastGenerated);
+  renderLibrary();
+  toast('تم الحفظ في المكتبة.', 'success');
+}
+
+window.loadLibraryEntry = function(id) {
+  const l = library.find(x => x.id === id);
+  if (!l) return;
+  lastGenerated = l;
+  document.getElementById('i-name').value = l.inputs.name || '';
+  document.getElementById('i-name-en').value = l.inputs.nameEn || '';
+  document.getElementById('i-category').value = l.inputs.category || '';
+  document.getElementById('i-platform').value = l.inputs.platform || 'noon';
+  document.getElementById('i-features').value = l.inputs.features || '';
+  document.getElementById('i-keywords').value = l.inputs.keywords || '';
+  document.getElementById('i-audience').value = l.inputs.audience || 'general';
+  document.getElementById('i-occasion').value = l.inputs.occasion || '';
+  renderOutput(l.output);
+  toast('تم تحميل Listing المحفوظ.', 'success');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.deleteLibraryEntry = async function(id) {
+  const l = library.find(x => x.id === id);
+  if (!l) return;
+  const ok = await confirmModal('حذف من المكتبة', 'حذف "' + (l.inputs.name || '—') + '" نهائياً؟', 'حذف');
+  if (!ok) return;
+  await removeListing(id);
+  library = library.filter(x => x.id !== id);
+  renderLibrary();
+  toast('تم الحذف.', 'success');
+};
+
+// ============ Library filters ============
+function applyLibFilters(list) {
+  const q = (libFilters.search || '').toLowerCase();
+  return list.filter(l => {
+    if (libFilters.platform && (l.inputs.platform || '') !== libFilters.platform) return false;
+    if (libFilters.audience && (l.inputs.audience || '') !== libFilters.audience) return false;
+    if (q) {
+      const hay = ((l.inputs.name || '') + ' ' + (l.inputs.nameEn || '') + ' ' + (l.output.title_ar || '') + ' ' + (l.output.title_en || '')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderLibrary() {
+  const tbody = document.getElementById('library-rows');
+  const empty = document.getElementById('empty-lib');
+  const filtered = applyLibFilters(library);
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    const hasFilters = libFilters.search || libFilters.platform || libFilters.audience;
+    empty.textContent = (library.length > 0 && hasFilters)
+      ? 'لا نتائج للفلاتر الحالية — جرّب توسيع البحث.'
+      : 'احفظ Listing مُولَّداً لتجد جميع نسخك هنا.';
+    return;
+  }
+  empty.style.display = 'none';
+  const platformLabel = (p) => ({ noon: 'Noon', amazon: 'Amazon', both: 'Noon+Amazon' }[p] || p);
+  const audienceLabel = (a) => ({
+    newborn: 'مواليد', toddler: 'أطفال 1-3', preschool: '3-6 سنوات',
+    gift: 'هدايا', general: 'عام'
+  }[a] || a);
+
+  tbody.innerHTML = filtered.map(l => {
+    const date = new Date(l.savedAt).toISOString().slice(0, 10);
+    return `<tr>
+      <td>
+        <div style="font-weight:500; color: var(--navy);">${escapeHtml(l.inputs.name || '—')}</div>
+        <div style="font-size:11px; color: var(--muted);">${escapeHtml((l.output.title_ar || '').slice(0, 70))}${(l.output.title_ar || '').length > 70 ? '...' : ''}</div>
+      </td>
+      <td style="font-size:12px;">${escapeHtml(l.inputs.category || '—')}</td>
+      <td><span class="platform-pill">${platformLabel(l.inputs.platform)}</span></td>
+      <td style="font-size:12px;">${audienceLabel(l.inputs.audience)}</td>
+      <td class="num" style="font-size:12px; color: var(--muted);">${date}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn-icon" onclick="loadLibraryEntry('${l.id}')" title="تحميل">↺</button>
+        <button class="btn-icon" onclick="deleteLibraryEntry('${l.id}')" title="حذف" style="color: var(--rose-deep);">×</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function exportLibrary() {
+  if (library.length === 0) { toast('لا توجد listings للتصدير.', 'error'); return; }
+  const headers = ['Product (AR)','Product (EN)','Category','Platform','Audience','Title AR','Title EN','Bullets AR','Bullets EN','Description AR','Description EN','Backend Keywords','Saved'];
+  const rows = library.map(l => [
+    l.inputs.name, l.inputs.nameEn, l.inputs.category, l.inputs.platform, l.inputs.audience,
+    l.output.title_ar, l.output.title_en,
+    (l.output.bullets_ar || []).join(' | '), (l.output.bullets_en || []).join(' | '),
+    l.output.description_ar, l.output.description_en, l.output.backend_keywords,
+    new Date(l.savedAt).toISOString().slice(0,10)
+  ].map(v => {
+    const s = String(v ?? '').replace(/\n/g, ' ');
+    return /[",]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }).join(','));
+  const csv = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'malmas_listings_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function download(filename, content, mime) {
+  const blob = new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportLibraryJSON() {
+  if (library.length === 0) { toast('لا توجد listings للتصدير.', 'error'); return; }
+  download(
+    'malmas_listings_' + new Date().toISOString().slice(0,10) + '.json',
+    JSON.stringify(library, null, 2),
+    'application/json;charset=utf-8'
+  );
+  toast('تم تصدير JSON.', 'success');
+}
+
+async function importLibraryJSON(file) {
+  let raw;
+  try {
+    const text = await file.text();
+    raw = JSON.parse(text);
+  } catch {
+    toast('الملف ليس JSON صالحاً.', 'error');
+    return;
+  }
+  const list = Array.isArray(raw) ? raw : [raw];
+  let added = 0;
+  for (const l of list) {
+    if (!l || !l.inputs || !l.output) continue;
+    const item = {
+      inputs: l.inputs,
+      output: l.output,
+      id: 'lst_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      savedAt: Date.now()
+    };
+    await persistListing(item);
+    library.unshift(item);
+    added++;
+  }
+  renderLibrary();
+  if (added === 0) toast('لم يتم تعريف أي Listing في الملف.', 'error');
+  else toast('تم استيراد ' + added + ' Listing.', 'success');
+}
+
+// Init
+function showEmptyOutput() {
+  document.getElementById('output').innerHTML =
+    `<div class="output-empty">
+      <div class="empty-icon">◆</div>
+      <div style="font-weight:500; color: var(--navy); margin-bottom:6px;">لا يوجد Listing مُولَّد بعد</div>
+      <div>اختر SKU جاهز أو املأ البيانات يدوياً ثم اضغط "توليد Listing".</div>
+    </div>`;
+}
+
+document.getElementById('generate-btn').addEventListener('click', generateListing);
+document.getElementById('export-btn').addEventListener('click', exportLibrary);
+document.getElementById('export-json-btn').addEventListener('click', exportLibraryJSON);
+document.getElementById('import-json-btn').addEventListener('click', () => document.getElementById('import-file').click());
+document.getElementById('import-file').addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (f) await importLibraryJSON(f);
+  e.target.value = '';
+});
+
+// Library filters
+const onLibFilter = () => {
+  libFilters.search   = document.getElementById('filter-search').value.trim();
+  libFilters.platform = document.getElementById('filter-platform').value;
+  libFilters.audience = document.getElementById('filter-audience').value;
+  renderLibrary();
+};
+document.getElementById('filter-search').addEventListener('input', onLibFilter);
+document.getElementById('filter-platform').addEventListener('change', onLibFilter);
+document.getElementById('filter-audience').addEventListener('change', onLibFilter);
+document.getElementById('clear-filters').addEventListener('click', () => {
+  document.getElementById('filter-search').value = '';
+  document.getElementById('filter-platform').value = '';
+  document.getElementById('filter-audience').value = '';
+  libFilters = { search: '', platform: '', audience: '' };
+  renderLibrary();
+});
+
+renderSkuPills();
+showEmptyOutput();
+loadLibrary();
+</script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَلْمَس · لوحة الأدوات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --surface: #FFFFFF;
+    --navy: #1E2A44;
+    --navy-deep: #14203A;
+    --gold: #C9A961;
+    --gold-soft: #E5D5A8;
+    --gold-deep: #A88841;
+    --sage: #8B9A7E;
+    --sage-soft: #DCE3D3;
+    --sage-deep: #5F7050;
+    --rose: #C97B7B;
+    --rose-soft: #F0DADA;
+    --rose-deep: #8E4A4A;
+    --amber: #D69A4C;
+    --amber-soft: #F5E2C0;
+    --muted: #6B6F7A;
+    --ink: #2A2E36;
+    --border: #E8E2D5;
+    --border-soft: #F0EBE0;
+    --shade: #F5F1E8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--cream); color: var(--ink); font-family: 'Tajawal', system-ui, sans-serif; font-size: 15px; line-height: 1.55; overflow: hidden; }
+
+  .shell { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
+
+  /* === Sidebar === */
+  aside.nav {
+    background: var(--surface);
+    border-inline-start: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .brand-block { padding: 24px 22px 18px; border-bottom: 1px solid var(--border-soft); }
+  .wordmark { font-family: 'Amiri', serif; font-size: 32px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; line-height: 1; }
+  .brand-tag { font-size: 12px; color: var(--muted); margin-top: 6px; font-weight: 500; }
+  .brand-quote { font-family: 'Amiri', serif; font-size: 13px; color: var(--gold); margin-top: 8px; }
+
+  .nav-section-title { font-size: 11px; color: var(--muted); font-weight: 700; padding: 18px 22px 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .nav-list { display: flex; flex-direction: column; gap: 2px; padding: 0 12px 12px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px; border-radius: 8px;
+    cursor: pointer; color: var(--ink);
+    transition: all 0.15s; border: 1px solid transparent;
+    text-align: start;
+  }
+  .nav-item:hover { background: var(--shade); }
+  .nav-item.active { background: var(--shade); border-color: var(--gold-soft); }
+  .nav-item .icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--shade); color: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Amiri', serif; font-size: 18px; font-weight: 700;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .nav-item.active .icon { background: var(--gold-soft); border-color: var(--gold); color: var(--gold-deep); }
+  .nav-item .text { flex: 1; min-width: 0; }
+  .nav-item .name { font-size: 14px; font-weight: 500; color: var(--navy); line-height: 1.2; }
+  .nav-item .desc { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
+  .nav-item.active .name { font-weight: 700; }
+
+  .nav-footer { margin-top: auto; padding: 14px 22px; border-top: 1px solid var(--border-soft); font-size: 11px; color: var(--muted); }
+  .nav-footer .num { font-family: 'Inter', sans-serif; color: var(--navy); font-weight: 600; }
+  .nav-footer a { color: var(--gold-deep); text-decoration: none; }
+  .nav-footer a:hover { text-decoration: underline; }
+
+  /* === Main content === */
+  main.content { display: flex; flex-direction: column; min-width: 0; background: var(--cream); }
+
+  .topbar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .topbar .crumb-tool { font-size: 16px; font-weight: 700; color: var(--navy); }
+  .topbar .crumb-tag { font-size: 12px; color: var(--muted); background: var(--shade); padding: 3px 10px; border-radius: 4px; }
+  .topbar .spacer { flex: 1; }
+  .topbar .ext-link {
+    font-size: 12px; color: var(--muted); text-decoration: none;
+    padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .topbar .ext-link:hover { border-color: var(--gold); color: var(--navy); background: var(--shade); }
+
+  .mobile-toggle {
+    display: none;
+    background: transparent; border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 10px; cursor: pointer;
+    font-family: inherit; color: var(--navy);
+  }
+
+  .frame-wrap {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    background: var(--cream);
+  }
+  iframe.tool-frame {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    border: 0;
+    background: var(--cream);
+  }
+
+  .welcome {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .welcome-inner {
+    max-width: 720px; text-align: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 40px 36px;
+  }
+  .welcome-icon { font-family: 'Amiri', serif; font-size: 64px; color: var(--gold); margin-bottom: 8px; line-height: 1; }
+  .welcome h1 { font-family: 'Amiri', serif; font-size: 30px; color: var(--navy); margin-bottom: 6px; }
+  .welcome p { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+  .welcome-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .welcome-card {
+    background: var(--shade); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; cursor: pointer;
+    text-align: start; transition: all 0.15s;
+  }
+  .welcome-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .welcome-card .wc-name { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .welcome-card .wc-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+    aside.nav {
+      position: fixed; inset-inline-end: 0; top: 0; bottom: 0;
+      width: 280px; z-index: 50;
+      transform: translateX(100%);
+      transition: transform 0.25s;
+      box-shadow: -8px 0 24px rgba(20, 32, 58, 0.08);
+    }
+    html[dir="rtl"] aside.nav { transform: translateX(-100%); }
+    aside.nav.open { transform: translateX(0); }
+    .mobile-toggle { display: inline-flex; }
+    .nav-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(20, 32, 58, 0.4); z-index: 40;
+    }
+    .nav-overlay.show { display: block; }
+    .welcome-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="nav" id="nav">
+    <div class="brand-block">
+      <div class="wordmark">مَلْمَس</div>
+      <div class="brand-tag">لوحة الأدوات الداخلية</div>
+      <div class="brand-quote">لأن كل لمسة تهم</div>
+    </div>
+
+    <div class="nav-section-title">أدوات الإنتاج</div>
+    <nav class="nav-list" id="nav-list">
+      <button class="nav-item" data-tool="gates" type="button">
+        <div class="icon">١</div>
+        <div class="text">
+          <div class="name">بوابات الموافقة</div>
+          <div class="desc">6 Gates · منع Factory Drift</div>
+        </div>
+      </button>
+      <button class="nav-item" data-tool="margin" type="button">
+        <div class="icon">٢</div>
+        <div class="text">
+          <div class="name">حاسبة الهامش</div>
+          <div class="desc">سعر · عمولة · ضريبة · 3PL</div>
+        </div>
+      </button>
+      <button class="nav-item" data-tool="poc" type="button">
+        <div class="icon">٣</div>
+        <div class="text">
+          <div class="name">لوحة قياس PoC</div>
+          <div class="desc">CAC · ROAS · حملات Influencers</div>
+        </div>
+      </button>
+    </nav>
+
+    <div class="nav-section-title">أدوات المحتوى</div>
+    <nav class="nav-list">
+      <button class="nav-item" data-tool="caption" type="button">
+        <div class="icon">٤</div>
+        <div class="text">
+          <div class="name">مولّد المنشورات</div>
+          <div class="desc">Instagram · TikTok · Snapchat</div>
+        </div>
+      </button>
+      <button class="nav-item" data-tool="listing" type="button">
+        <div class="icon">٥</div>
+        <div class="text">
+          <div class="name">مولّد Listings</div>
+          <div class="desc">Noon · Amazon KSA</div>
+        </div>
+      </button>
+    </nav>
+
+    <div class="nav-footer">
+      التاريخ: <span class="num" id="today">—</span><br>
+      مَلْمَس · صوت من الأمومة، إلى الأمومة
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="topbar">
+      <button class="mobile-toggle" id="mobile-toggle" type="button" aria-label="القائمة">≡ القائمة</button>
+      <div class="crumb-tool" id="crumb-tool">لوحة الأدوات</div>
+      <span class="crumb-tag" id="crumb-tag">اختر أداة من القائمة</span>
+      <div class="spacer"></div>
+      <a class="ext-link" id="ext-link" href="#" target="_blank" rel="noopener" style="display:none;">فتح في تبويب جديد ↗</a>
+    </div>
+
+    <div class="frame-wrap" id="frame-wrap">
+      <div class="welcome" id="welcome">
+        <div class="welcome-inner">
+          <div class="welcome-icon">◆</div>
+          <h1>أهلاً بكِ في لوحة مَلْمَس</h1>
+          <p>خمس أدوات داخلية، صوت موحّد، انضباط في كل خطوة. ابدئي بأداة من القائمة، أو اختاري من البطاقات التالية.</p>
+          <div class="welcome-grid">
+            <button class="welcome-card" data-tool="gates" type="button">
+              <div class="wc-name">بوابات الموافقة</div>
+              <div class="wc-desc">تتبّع الست بوابات قبل دفع 70% الأخيرة للمصنع.</div>
+            </button>
+            <button class="welcome-card" data-tool="margin" type="button">
+              <div class="wc-name">حاسبة الهامش</div>
+              <div class="wc-desc">احسبي صافي الربح على Noon و Amazon و Salla قبل الإطلاق.</div>
+            </button>
+            <button class="welcome-card" data-tool="poc" type="button">
+              <div class="wc-name">قياس PoC</div>
+              <div class="wc-desc">تابعي حملات Influencers بـ CAC و ROAS وحدود قرار.</div>
+            </button>
+            <button class="welcome-card" data-tool="caption" type="button">
+              <div class="wc-name">مولّد المنشورات</div>
+              <div class="wc-desc">منشورات بصوت ريم ومِسْمِس لـ Instagram و TikTok.</div>
+            </button>
+            <button class="welcome-card" data-tool="listing" type="button">
+              <div class="wc-name">مولّد Listings</div>
+              <div class="wc-desc">عناوين ومميّزات ووصف بالعربية والإنجليزية لـ Noon و Amazon.</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="nav-overlay" id="nav-overlay"></div>
+
+<script>
+'use strict';
+
+// نستخدم مسارات مطلقة لـ /miniapps/ حتى تعمل اللوحة من /dashboard أو من /miniapps/malmas_dashboard.html
+const TOOLS = {
+  gates:   { file: '/miniapps/malmas_gates_tracker.html',     name: 'بوابات الموافقة',   tag: '6 Gates' },
+  margin:  { file: '/miniapps/malmas_margin_calculator.html', name: 'حاسبة الهامش',      tag: 'Pricing' },
+  poc:     { file: '/miniapps/malmas_poc_dashboard.html',     name: 'قياس PoC',          tag: 'Marketing' },
+  caption: { file: '/miniapps/malmas_caption_generator.html', name: 'مولّد المنشورات',   tag: 'Social' },
+  listing: { file: '/miniapps/malmas_listing_generator.html', name: 'مولّد Listings',    tag: 'Marketplaces' }
+};
+
+const $ = (id) => document.getElementById(id);
+const wrap = $('frame-wrap');
+const welcome = $('welcome');
+const crumbTool = $('crumb-tool');
+const crumbTag = $('crumb-tag');
+const extLink = $('ext-link');
+let currentFrame = null;
+let currentTool = null;
+
+function loadTool(toolKey) {
+  const tool = TOOLS[toolKey];
+  if (!tool) {
+    showWelcome();
+    return;
+  }
+  currentTool = toolKey;
+
+  // تحديث الـ breadcrumb والروابط
+  crumbTool.textContent = tool.name;
+  crumbTag.textContent = tool.tag;
+  extLink.href = tool.file;
+  extLink.style.display = '';
+
+  // تحديث الـ active في القائمة
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.tool === toolKey);
+  });
+
+  // إخفاء صفحة الترحيب
+  welcome.style.display = 'none';
+
+  // إعادة استخدام نفس الـ iframe إن وُجد، لتجنّب وميض إعادة التحميل عند نفس الأداة
+  if (!currentFrame) {
+    currentFrame = document.createElement('iframe');
+    currentFrame.className = 'tool-frame';
+    currentFrame.setAttribute('title', tool.name);
+    wrap.appendChild(currentFrame);
+  }
+  // نُغيّر الـ src فقط عند الانتقال لأداة مختلفة
+  const desired = tool.file;
+  const currentSrc = currentFrame.getAttribute('src') || '';
+  if (!currentSrc.endsWith(desired)) {
+    currentFrame.src = desired;
+  }
+}
+
+function showWelcome() {
+  currentTool = null;
+  crumbTool.textContent = 'لوحة الأدوات';
+  crumbTag.textContent = 'اختر أداة من القائمة';
+  extLink.style.display = 'none';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  welcome.style.display = '';
+  if (currentFrame) {
+    currentFrame.remove();
+    currentFrame = null;
+  }
+}
+
+function activateFromHash() {
+  const h = (location.hash || '').replace(/^#/, '');
+  if (h && TOOLS[h]) loadTool(h);
+  else showWelcome();
+}
+
+// Wiring
+document.querySelectorAll('[data-tool]').forEach(el => {
+  el.addEventListener('click', (e) => {
+    const t = e.currentTarget.dataset.tool;
+    if (!t) return;
+    if (location.hash.replace(/^#/, '') === t) {
+      // نفس الأداة — فقط أغلق قائمة الموبايل
+      closeMobileNav();
+      return;
+    }
+    location.hash = '#' + t;
+    closeMobileNav();
+  });
+});
+
+window.addEventListener('hashchange', activateFromHash);
+
+// Mobile nav
+const nav = $('nav');
+const overlay = $('nav-overlay');
+function openMobileNav() { nav.classList.add('open'); overlay.classList.add('show'); }
+function closeMobileNav() { nav.classList.remove('open'); overlay.classList.remove('show'); }
+$('mobile-toggle').addEventListener('click', () => {
+  if (nav.classList.contains('open')) closeMobileNav(); else openMobileNav();
+});
+overlay.addEventListener('click', closeMobileNav);
+
+// Today
+const d = new Date();
+$('today').textContent = d.toISOString().slice(0, 10);
+
+// Boot
+activateFromHash();
+</script>
+</body>
+</html>

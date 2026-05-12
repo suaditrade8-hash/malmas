@@ -2,15 +2,18 @@
 # يُغطّي: الصفحة الرئيسية، صفحة الهبوط، استلام الحجوزات،
 # ولوحة إدارة محميّة بكلمة مرور (HTTP Basic Auth) لعرض الحجوزات.
 
+import json
 import os
 import re
 import sqlite3
+import urllib.error
+import urllib.request
 from datetime import datetime
 from functools import wraps
 
 from flask import (
     Flask, render_template, request, jsonify,
-    Response,
+    Response, send_from_directory,
 )
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -40,6 +43,14 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data.db')
 
 # كلمة مرور لوحة الإدارة — تُضبط في Render dashboard بمتغيّر البيئة ADMIN_PASSWORD.
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', '')
+
+# مفتاح Anthropic — يُضبط في Render dashboard بمتغيّر البيئة ANTHROPIC_API_KEY.
+# يُستخدم لتوكيل نداءات الـ miniApps إلى Claude بحيث يبقى المفتاح على الخادم.
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+ANTHROPIC_DEFAULT_MODEL = os.environ.get(
+    'ANTHROPIC_MODEL', 'claude-sonnet-4-5-20250929'
+)
+MINIAPPS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'miniApps')
 
 
 # ----------------------------------------------------------------------
@@ -213,6 +224,100 @@ def process_booking():
 def admin_panel():
     bookings = list_all_bookings()
     return render_template('admin.html', bookings=bookings)
+
+
+# ----------------------------------------------------------------------
+# miniApps — أدوات داخلية للفريق (محميّة بكلمة مرور الإدارة)
+# ----------------------------------------------------------------------
+
+# لوحة الأدوات الموحّدة — تجمع كل miniApps في واجهة واحدة.
+@app.route('/dashboard')
+@admin_required
+def miniapps_dashboard():
+    return send_from_directory(MINIAPPS_DIR, 'malmas_dashboard.html')
+
+
+# يقدّم ملفّات HTML من مجلد miniApps. مثال: /miniapps/malmas_caption_generator.html
+@app.route('/miniapps/<path:filename>')
+@admin_required
+def miniapps_static(filename):
+    # السماح فقط بملفّات .html داخل المجلد — حماية ضدّ Path Traversal.
+    if not filename.endswith('.html') or '..' in filename or '/' in filename:
+        return Response('غير مسموح.', 403)
+    return send_from_directory(MINIAPPS_DIR, filename)
+
+
+# توكيل آمن لنداءات Claude — يُبقي ANTHROPIC_API_KEY على الخادم.
+# يستقبل { prompt, max_tokens?, model? } ويعيد { text } أو { error }.
+@app.route('/api/generate', methods=['POST'])
+@admin_required
+def api_generate():
+    if not ANTHROPIC_API_KEY:
+        return jsonify({
+            'error': 'ANTHROPIC_API_KEY غير مضبوط في البيئة. اضبطه على Render قبل استخدام أدوات التوليد.'
+        }), 503
+
+    payload = request.get_json(silent=True) or {}
+    prompt = (payload.get('prompt') or '').strip()
+    if not prompt:
+        return jsonify({'error': 'الحقل "prompt" مطلوب.'}), 400
+
+    max_tokens = int(payload.get('max_tokens') or 2400)
+    if max_tokens < 64 or max_tokens > 8000:
+        max_tokens = 2400
+    model = payload.get('model') or ANTHROPIC_DEFAULT_MODEL
+
+    body = json.dumps({
+        'model': model,
+        'max_tokens': max_tokens,
+        'messages': [{'role': 'user', 'content': prompt}],
+    }).encode('utf-8')
+
+    req = urllib.request.Request(
+        'https://api.anthropic.com/v1/messages',
+        data=body,
+        method='POST',
+        headers={
+            'Content-Type': 'application/json',
+            'x-api-key': ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+    except urllib.error.HTTPError as http_err:
+        detail = ''
+        try:
+            detail = http_err.read().decode('utf-8')[:400]
+        except Exception:
+            pass
+        return jsonify({
+            'error': f'فشل نداء Claude: HTTP {http_err.code}',
+            'detail': detail,
+        }), 502
+    except urllib.error.URLError as url_err:
+        return jsonify({
+            'error': 'تعذّر الاتصال بـ Claude — تحقّق من الاتصال.',
+            'detail': str(url_err.reason),
+        }), 502
+    except Exception as error:
+        return jsonify({
+            'error': 'خطأ غير متوقّع أثناء التوليد.',
+            'detail': str(error),
+        }), 500
+
+    # تجميع النصّ من كتل الاستجابة.
+    text_parts = []
+    for block in data.get('content', []) or []:
+        if block.get('type') == 'text':
+            text_parts.append(block.get('text', ''))
+    return jsonify({
+        'text': '\n'.join(text_parts).strip(),
+        'model': data.get('model'),
+        'usage': data.get('usage'),
+    })
 
 
 # ----------------------------------------------------------------------

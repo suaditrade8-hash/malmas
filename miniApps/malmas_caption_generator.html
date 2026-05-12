@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَلْمَس · مولّد المنشورات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --surface: #FFFFFF;
+    --navy: #1E2A44;
+    --navy-deep: #14203A;
+    --gold: #C9A961;
+    --gold-soft: #E5D5A8;
+    --gold-deep: #A88841;
+    --sage: #8B9A7E;
+    --sage-soft: #DCE3D3;
+    --sage-deep: #5F7050;
+    --rose: #C97B7B;
+    --rose-soft: #F0DADA;
+    --rose-deep: #8E4A4A;
+    --sand: #D9C5A0;
+    --sand-soft: #F0E5CC;
+    --sand-deep: #A88841;
+    --amber: #D69A4C;
+    --amber-soft: #F5E2C0;
+    --muted: #6B6F7A;
+    --ink: #2A2E36;
+    --border: #E8E2D5;
+    --border-soft: #F0EBE0;
+    --shade: #F5F1E8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); color: var(--ink); font-family: 'Tajawal', system-ui, sans-serif; font-size: 15px; line-height: 1.65; }
+  .num { font-family: 'Inter', sans-serif; font-feature-settings: "tnum" 1; direction: ltr; unicode-bidi: isolate; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  header { display: flex; flex-direction: column; gap: 8px; padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .wordmark { font-family: 'Amiri', serif; font-size: 38px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+  .divider { color: var(--gold); font-size: 22px; }
+  .page-title { font-size: 18px; font-weight: 500; color: var(--ink); }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .tag { display: inline-block; background: var(--shade); color: var(--navy); font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 4px; margin-inline-start: 8px; }
+
+  /* Character selection */
+  .character-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .character-card { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 22px 24px; cursor: pointer; transition: all 0.2s; }
+  .character-card:hover { transform: translateY(-2px); border-color: var(--gold-soft); }
+  .character-card.active { border-color: var(--gold); background: var(--shade); }
+  .character-card.mismes.active { border-color: var(--sage); background: var(--sage-soft); }
+  .character-card.reem.active { border-color: var(--sand-deep); background: var(--sand-soft); }
+  .char-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .char-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Amiri', serif; font-size: 24px; font-weight: 700; }
+  .character-card.mismes .char-avatar { background: var(--sage); color: var(--surface); }
+  .character-card.reem .char-avatar { background: var(--sand-deep); color: var(--surface); }
+  .char-name { font-family: 'Amiri', serif; font-size: 22px; color: var(--navy); font-weight: 700; }
+  .char-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .char-desc { font-size: 13px; color: var(--ink); line-height: 1.6; }
+  .char-traits { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .trait { font-size: 11px; padding: 3px 9px; border-radius: 4px; background: var(--surface); color: var(--navy); border: 1px solid var(--border); font-weight: 500; }
+
+  /* Layout */
+  .layout { display: grid; grid-template-columns: 420px 1fr; gap: 24px; }
+  @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; }
+  .panel-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; gap: 8px; }
+  .panel-title .icon { color: var(--gold); }
+
+  .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+  .field label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .field .hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .field input, .field select, .field textarea { font-family: inherit; font-size: 14px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--ink); width: 100%; resize: vertical; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn { font-family: inherit; font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary { background: var(--navy); color: var(--surface); border-color: var(--navy); width: 100%; justify-content: center; }
+  .btn-primary:hover { background: var(--navy-deep); }
+  .btn-primary:disabled { background: var(--muted); border-color: var(--muted); cursor: not-allowed; opacity: 0.6; }
+  .btn-ghost { background: transparent; color: var(--navy); border-color: var(--border); }
+  .btn-ghost:hover { background: var(--shade); border-color: var(--gold); }
+  .btn-icon { background: transparent; border: none; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 13px; }
+  .btn-icon:hover { background: var(--shade); color: var(--navy); }
+
+  /* Output */
+  .output-empty { text-align: center; padding: 60px 24px; color: var(--muted); }
+  .output-empty .empty-icon { font-family: 'Amiri', serif; font-size: 56px; color: var(--gold-soft); margin-bottom: 12px; }
+
+  .loading { text-align: center; padding: 60px 24px; color: var(--muted); }
+  .loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Post cards */
+  .post-card { background: var(--shade); border-radius: 10px; padding: 20px 22px; margin-bottom: 16px; border-inline-start: 4px solid var(--gold); }
+  .post-card.mismes { border-inline-start-color: var(--sage); }
+  .post-card.reem { border-inline-start-color: var(--sand-deep); }
+  .post-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .post-platform { font-size: 11px; padding: 3px 10px; border-radius: 4px; background: var(--surface); color: var(--navy); font-weight: 500; border: 1px solid var(--border); }
+  .post-variant { font-size: 12px; color: var(--muted); font-weight: 500; margin-inline-start: auto; }
+  .post-caption { font-size: 15px; color: var(--ink); line-height: 1.8; white-space: pre-wrap; word-wrap: break-word; }
+  .post-hashtags { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); }
+  .hashtag { display: inline-block; font-size: 13px; color: var(--gold-deep); margin-inline-end: 8px; font-family: 'Inter', sans-serif; direction: ltr; }
+  .post-meta-row { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+  .post-meta-row .copy-btn { margin-inline-start: auto; }
+  .copy-btn { font-size: 11px; padding: 3px 10px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); border-radius: 4px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .copy-btn:hover { border-color: var(--gold); color: var(--navy); }
+  .copy-btn.copied { background: var(--sage-soft); border-color: var(--sage); color: var(--sage-deep); }
+  .char-count { font-family: 'Inter', sans-serif; }
+  .char-count.over { color: var(--rose-deep); font-weight: 600; }
+
+  .compliance-banner { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--sage-soft); border-radius: 6px; margin-bottom: 18px; font-size: 13px; color: var(--sage-deep); border-inline-start: 3px solid var(--sage); }
+  .compliance-banner.warn { background: var(--rose-soft); color: var(--rose-deep); border-inline-start-color: var(--rose); }
+
+  /* Library */
+  .library { margin-top: 28px; }
+  .library-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .library-title { font-size: 16px; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 8px; }
+  .library-title .icon { color: var(--gold); }
+  .library-table { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--shade); }
+  th { text-align: start; padding: 12px 14px; font-size: 12px; font-weight: 700; color: var(--navy); border-bottom: 1px solid var(--border); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border-soft); font-size: 13px; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--shade); }
+  .empty-lib { text-align: center; padding: 40px 16px; color: var(--muted); font-size: 14px; }
+
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 13px; }
+  footer .quote { font-family: 'Amiri', serif; font-size: 15px; color: var(--gold); }
+
+  @media (max-width: 880px) {
+    .wrap { padding: 20px 16px 60px; }
+    .wordmark { font-size: 30px; }
+    .character-grid { grid-template-columns: 1fr; }
+    .field-row { grid-template-columns: 1fr; }
+    .lib-filters { flex-direction: column; align-items: stretch !important; }
+    .lib-filters select, .lib-filters input { width: 100%; }
+  }
+
+  /* === Added: toast, modal, library filters, action buttons === */
+  .toast-wrap { position: fixed; top: 24px; inset-inline-end: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .toast {
+    background: var(--navy); color: var(--surface);
+    padding: 12px 18px; border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(20, 32, 58, 0.25);
+    font-size: 14px; font-weight: 500;
+    pointer-events: auto;
+    border-inline-start: 3px solid var(--gold);
+    max-width: 360px;
+  }
+  .toast.success { border-inline-start-color: var(--sage); }
+  .toast.error { background: var(--rose-deep); border-inline-start-color: var(--rose-soft); }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20, 32, 58, 0.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--surface); border-radius: 12px; padding: 28px; max-width: 460px; width: 100%; }
+  .modal h3 { font-family: 'Amiri', serif; font-size: 22px; color: var(--navy); margin-bottom: 8px; }
+  .modal p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+  .lib-filters {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .lib-filters select, .lib-filters input {
+    font-family: inherit; font-size: 13px; padding: 7px 12px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--ink);
+  }
+  .lib-filters .filter-label {
+    font-size: 12px; color: var(--muted); font-weight: 500;
+  }
+  .lib-filters .clear-filters {
+    font-size: 12px; padding: 6px 12px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); border-radius: 6px; cursor: pointer;
+  }
+  .lib-filters .clear-filters:hover { border-color: var(--gold); color: var(--navy); }
+
+  .toolbar-btn {
+    font-family: inherit; font-size: 13px; padding: 8px 14px;
+    border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--navy); font-weight: 500;
+  }
+  .toolbar-btn:hover { border-color: var(--gold); background: var(--shade); }
+  .hidden-input { display: none; }
+
+  /* Variant action bar */
+  .variant-actions { display: flex; gap: 8px; margin-inline-start: auto; align-items: center; flex-wrap: wrap; }
+  .variant-actions .mini-btn {
+    font-family: inherit; font-size: 11px; padding: 4px 10px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--muted); border-radius: 4px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .variant-actions .mini-btn:hover { border-color: var(--gold); color: var(--navy); }
+  .variant-actions .mini-btn.regenerating { opacity: 0.6; pointer-events: none; }
+
+  /* "Loaded from library" indicator */
+  .loaded-banner {
+    background: var(--sage-soft); color: var(--sage-deep);
+    padding: 10px 14px; border-radius: 6px;
+    border-inline-start: 3px solid var(--sage);
+    font-size: 13px; margin-bottom: 14px;
+    display: none; align-items: center; justify-content: space-between;
+  }
+  .loaded-banner.show { display: flex; }
+  .loaded-banner .dismiss { background: transparent; border: 0; color: var(--sage-deep); cursor: pointer; font-size: 14px; padding: 0 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <span class="wordmark">مَلْمَس</span>
+      <span class="divider">◆</span>
+      <span class="page-title">مولّد المنشورات</span>
+      <span class="tag">Instagram · TikTok · Snapchat</span>
+    </div>
+    <p class="subtitle">منشورات بصوت ريم ومِسْمِس — نبرة دافئة، إيقاع موزون، إيموجي محسوب، هاشتاقات بحدود واضحة.</p>
+  </header>
+
+  <div class="character-grid">
+    <div class="character-card mismes" data-character="mismes">
+      <div class="char-head">
+        <div class="char-avatar">م</div>
+        <div>
+          <div class="char-name">مِسْمِس</div>
+          <div class="char-role">القطة العربية · 0-3 سنوات</div>
+        </div>
+      </div>
+      <div class="char-desc">صوت حنون مُوجَّه للأمهات. تذكّرهن باللمسة الأولى، ودفء الرعاية، والحماية الناعمة. الكلمات: قلب، حنان، يدين، نوم، ضحكة.</div>
+      <div class="char-traits">
+        <span class="trait">حنون</span>
+        <span class="trait">قريب من الأم</span>
+        <span class="trait">إيقاع هادئ</span>
+        <span class="trait">رمل + مريمية</span>
+      </div>
+    </div>
+
+    <div class="character-card reem" data-character="reem">
+      <div class="char-head">
+        <div class="char-avatar">ر</div>
+        <div>
+          <div class="char-name">ريم</div>
+          <div class="char-role">غزال الريم · 3-6 سنوات</div>
+        </div>
+      </div>
+      <div class="char-desc">صوت تعليمي بالفصحى، إيقاع قصصي، مفردات السكينة والطبيعة. الكلمات: نخيل، صحراء، بحر، سماء، حروف، رحلة.</div>
+      <div class="char-traits">
+        <span class="trait">فصحى</span>
+        <span class="trait">قصصي</span>
+        <span class="trait">تعليمي</span>
+        <span class="trait">طبيعة خليجية</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <section class="panel">
+      <div class="panel-title"><span class="icon">◆</span> تفاصيل المنشور</div>
+
+      <div class="field">
+        <label for="i-product">المنتج</label>
+        <select id="i-product">
+          <option value="">— اختر منتجاً —</option>
+          <option value="sku1">SKU 1 — منظم العربة</option>
+          <option value="sku2">SKU 2 — وسادة الرضاعة</option>
+          <option value="sku3">SKU 3 — سجادة الحروف</option>
+          <option value="sku4">SKU 4 — هدية العقيقة</option>
+          <option value="sku5">SKU 5 — حقيبة الحفاضات</option>
+          <option value="sku6">SKU 6 — مصباح + صوت</option>
+          <option value="sku7">SKU 7 — طقم سيليكون</option>
+          <option value="sku8">SKU 8 — الدُمى</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="i-platform">المنصة</label>
+          <select id="i-platform">
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="snapchat">Snapchat</option>
+            <option value="multi">متعدد المنصات</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="i-format">الصيغة</label>
+          <select id="i-format">
+            <option value="caption">Caption (صورة)</option>
+            <option value="reel">Reel / فيديو قصير</option>
+            <option value="story">Story (نص قصير)</option>
+            <option value="carousel">Carousel (متعدد الصور)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="i-occasion">المناسبة</label>
+        <select id="i-occasion">
+          <option value="general">إطلاق عادي</option>
+          <option value="ramadan">رمضان</option>
+          <option value="eid">عيد الفطر / الأضحى</option>
+          <option value="aqeeqa">العقيقة</option>
+          <option value="baby-shower">Baby Shower</option>
+          <option value="back-to-school">العودة للمدارس</option>
+          <option value="white-friday">الجمعة البيضاء</option>
+          <option value="ksa-day">اليوم الوطني السعودي</option>
+          <option value="founding-day">يوم التأسيس</option>
+          <option value="new-mom">رسالة لأم جديدة</option>
+          <option value="education">منشور تعليمي عن المنتج</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="i-goal">هدف المنشور</label>
+        <select id="i-goal">
+          <option value="awareness">تعريف بالعلامة + المنتج</option>
+          <option value="emotion">بناء ارتباط عاطفي</option>
+          <option value="conversion">تحويل للشراء</option>
+          <option value="ugc-trigger">تشجيع الأمهات على المشاركة</option>
+          <option value="testimonial">تأطير شهادة عميلة</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="i-context">تفاصيل إضافية (اختياري)</label>
+        <textarea id="i-context" rows="3" placeholder="مثال: نريد التركيز على حاجز الأمان 14سم، أو ربط المنتج بقصة عميلة من جدة..."></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="i-variants">عدد الاختلافات</label>
+          <select id="i-variants">
+            <option value="1">واحد</option>
+            <option value="2" selected>اثنان</option>
+            <option value="3">ثلاثة</option>
+          </select>
+          <span class="hint">احصل على عدة خيارات لاختيار الأنسب.</span>
+        </div>
+        <div class="field">
+          <label for="i-hashtags">عدد الهاشتاقات</label>
+          <select id="i-hashtags">
+            <option value="3">3 (موصى به)</option>
+            <option value="4">4</option>
+            <option value="5">5 (حد أقصى)</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="generate-btn">
+        <span id="btn-label">توليد المنشور</span>
+      </button>
+
+      <div style="margin-top:14px; font-size:11px; color: var(--muted); line-height:1.5;">
+        الإيموجي المسموح: 🤍 ✨ 🌿 — بتحفّظ. ممنوع: 🔥 💯 🚀. حد الهاشتاقات: 5 كحد أقصى. النبرة: لا مبالغة، لا وعود طبية.
+      </div>
+    </section>
+
+    <section class="panel" style="min-height:500px;">
+      <div class="panel-title"><span class="icon">◆</span> المنشورات المُولَّدة</div>
+      <div id="output"></div>
+    </section>
+
+  </div>
+
+  <div class="library">
+    <div class="library-header">
+      <div class="library-title"><span class="icon">◆</span> منشورات محفوظة</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="toolbar-btn" id="export-btn">⇣ CSV</button>
+        <button class="toolbar-btn" id="export-json-btn">⇣ JSON</button>
+        <button class="toolbar-btn" id="import-json-btn">⇡ استيراد</button>
+        <input type="file" id="import-file" class="hidden-input" accept="application/json,.json">
+      </div>
+    </div>
+
+    <div class="lib-filters">
+      <span class="filter-label">بحث:</span>
+      <input id="filter-search" type="search" placeholder="نص داخل المنشور…" style="min-width: 200px;">
+      <span class="filter-label">الشخصية:</span>
+      <select id="filter-character">
+        <option value="">الكل</option>
+        <option value="mismes">مِسْمِس</option>
+        <option value="reem">ريم</option>
+      </select>
+      <span class="filter-label">المنصّة:</span>
+      <select id="filter-platform">
+        <option value="">الكل</option>
+        <option value="instagram">Instagram</option>
+        <option value="tiktok">TikTok</option>
+        <option value="snapchat">Snapchat</option>
+        <option value="multi">متعدد</option>
+      </select>
+      <span class="filter-label">المنتج:</span>
+      <select id="filter-product">
+        <option value="">الكل</option>
+        <option value="sku1">SKU 1</option>
+        <option value="sku2">SKU 2</option>
+        <option value="sku3">SKU 3</option>
+        <option value="sku4">SKU 4</option>
+        <option value="sku5">SKU 5</option>
+        <option value="sku6">SKU 6</option>
+        <option value="sku7">SKU 7</option>
+        <option value="sku8">SKU 8</option>
+      </select>
+      <button class="clear-filters" id="clear-filters">× إفراغ</button>
+    </div>
+
+    <div class="library-table">
+      <table>
+        <thead>
+          <tr>
+            <th>الشخصية</th>
+            <th>المنتج</th>
+            <th>المنصة</th>
+            <th>المناسبة</th>
+            <th>التاريخ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="library-rows"></tbody>
+      </table>
+      <div class="empty-lib" id="empty-lib">احفظ منشوراً مُولَّداً لتجد كل نسخك هنا.</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="quote">لأن كل لمسة تهم</div>
+    <div style="margin-top:6px;">صوت مَلْمَس · مكتوب من الأمومة، إلى الأمومة</div>
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <h3 id="confirm-title">—</h3>
+    <p id="confirm-message">—</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirm-cancel">إلغاء</button>
+      <button class="btn btn-primary" id="confirm-ok" style="width: auto;">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ============ Storage adapter (localStorage-backed) ============
+// يحاكي واجهة window.storage السابقة بحيث يبقى بقيّة الكود دون تغيير.
+window.storage = (function () {
+  return {
+    async get(key) {
+      try { const v = localStorage.getItem(key); return v == null ? null : { value: v }; }
+      catch { return null; }
+    },
+    async set(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { console.error('storage.set failed', e); }
+    },
+    async delete(key) {
+      try { localStorage.removeItem(key); } catch { }
+    },
+    async list(prefix) {
+      const keys = [];
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(prefix)) keys.push(k);
+        }
+      } catch { }
+      return { keys };
+    }
+  };
+})();
+
+// ============ SKU labels ============
+const SKU_NAMES = {
+  sku1: 'منظم العربة', sku2: 'وسادة الرضاعة', sku3: 'سجادة الحروف',
+  sku4: 'هدية العقيقة', sku5: 'حقيبة الحفاضات', sku6: 'مصباح + صوت',
+  sku7: 'طقم سيليكون', sku8: 'الدُمى الناعمة'
+};
+
+const PLATFORM_LABELS = {
+  instagram: 'Instagram', tiktok: 'TikTok', snapchat: 'Snapchat', multi: 'متعدد'
+};
+
+const OCCASION_LABELS = {
+  general: 'إطلاق', ramadan: 'رمضان', eid: 'العيد', aqeeqa: 'العقيقة',
+  'baby-shower': 'Baby Shower', 'back-to-school': 'العودة للمدارس',
+  'white-friday': 'الجمعة البيضاء', 'ksa-day': 'اليوم الوطني',
+  'founding-day': 'يوم التأسيس', 'new-mom': 'لأم جديدة', education: 'تعليمي'
+};
+
+// Allowed and forbidden emojis (brand rules)
+const ALLOWED_EMOJIS = ['🤍', '✨', '🌿', '🌙', '🕊️', '◆'];
+const FORBIDDEN_EMOJIS = ['🔥', '💯', '🚀', '💪', '😍', '😱', '🎉', '🎊', '⚡', '💥', '👑', '💸', '💰', '🤑', '👏', '🙌'];
+
+// Character platform limits
+const PLATFORM_LIMITS = {
+  instagram: 2200, tiktok: 2200, snapchat: 250, multi: 2200
+};
+
+// ============ State ============
+let selectedCharacter = null;
+let library = [];
+let lastGenerated = null;
+let libFilters = { search: '', character: '', platform: '', product: '' };
+
+// ============ Toast (non-blocking feedback) ============
+function toast(message, type = 'info', durationMs = 2600) {
+  const wrap = document.getElementById('toast-wrap');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'success' ? ' success' : type === 'error' ? ' error' : '');
+  el.textContent = message;
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.25s';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 280);
+  }, durationMs);
+}
+
+// ============ Confirm modal ============
+function confirmModal(title, message, okText = 'تأكيد') {
+  return new Promise(resolve => {
+    const modal = document.getElementById('confirm-modal');
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
+    const okBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
+    okBtn.textContent = okText;
+    modal.classList.add('show');
+    setTimeout(() => okBtn.focus(), 30);
+    const onOk = () => { cleanup(); resolve(true); };
+    const onCancel = () => { cleanup(); resolve(false); };
+    const onKey = (e) => {
+      if (e.key === 'Escape') onCancel();
+      else if (e.key === 'Enter') onOk();
+    };
+    function cleanup() {
+      modal.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      document.removeEventListener('keydown', onKey);
+    }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    document.addEventListener('keydown', onKey);
+  });
+}
+
+// ============ Storage ============
+async function loadLibrary() {
+  try {
+    const list = await window.storage.list('post:lib:');
+    if (list && list.keys) {
+      const items = await Promise.all(
+        list.keys.map(async k => {
+          try { const r = await window.storage.get(k); return r ? JSON.parse(r.value) : null; } catch { return null; }
+        })
+      );
+      library = items.filter(Boolean).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+    }
+  } catch { library = []; }
+  renderLibrary();
+}
+
+async function persistPost(p) {
+  try { await window.storage.set('post:lib:' + p.id, JSON.stringify(p)); } catch { }
+}
+
+async function removePost(id) {
+  try { await window.storage.delete('post:lib:' + id); } catch { }
+}
+
+// ============ Character selection ============
+document.querySelectorAll('.character-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.character-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    selectedCharacter = card.dataset.character;
+  });
+});
+
+// ============ Voice profile prompts ============
+function getCharacterVoiceProfile(character) {
+  if (character === 'mismes') {
+    return `**شخصية مِسْمِس (Mismes) — القطة العربية الحنون:**
+- **الفئة العمرية المستهدفة:** أمهات أطفال 0-3 سنوات
+- **النبرة:** حنونة، دافئة، قريبة، أمومية بالكامل. تخاطب الأم كأنها صديقة تعرفها.
+- **الإيقاع:** هادئ، مرنّم، جمل قصيرة متوسطة، استخدام نقاط ومسافات.
+- **اللغة:** عربية بسيطة طبيعية (وليست فصحى رسمية) — قريبة من نبرة الأمهات السعوديات الحقيقية. لا تكتب لهجة عامية صريحة.
+- **المفردات المميّزة:** قلب، حنان، يدين صغيرة، نوم، ضحكة، دفء، رضعة، لمسة، ساعة هادئة، يومك، تعب الأمومة.
+- **استعارات بصرية:** الفراء الناعم، الحضن، النور الخافت، الهمسات.
+- **الزوايا المفضّلة:** التعب الذي لا يُقال، اللحظات الصغيرة بين الأم والرضيع، الشعور بأنك لست وحدك.`;
+  } else {
+    return `**شخصية ريم (Reem) — غزال الريم العربي التعليمي:**
+- **الفئة العمرية المستهدفة:** أمهات أطفال 3-6 سنوات
+- **النبرة:** فصحى واضحة، قصصية، تعليمية بسلاسة، فيها سكينة طبيعية.
+- **الإيقاع:** قصصي، يبدأ غالباً بمشهد طبيعي، ثم يربط بالمنتج، ثم يدعو الأم لاكتشاف معه.
+- **اللغة:** فصحى مبسّطة لا متكلّفة. تخاطب الأم كشريكة في الرحلة التعليمية.
+- **المفردات المميّزة:** نخيل، صحراء، بحر، سماء، حروف، رحلة، خطوة، اكتشاف، حكاية، نسمة، رمل، ضوء، هدوء.
+- **استعارات بصرية:** المشي بين النخيل، ضوء الفجر الذهبي، أوّل حرف يكتبه طفل، الصحراء الساكنة.
+- **الزوايا المفضّلة:** فرحة أوّل كلمة، تعليم الحروف بمتعة، السكينة في يومك مع أطفالك، الإرث الثقافي.`;
+  }
+}
+
+// ============ Generate ============
+function readInputs() {
+  return {
+    product:       document.getElementById('i-product').value,
+    platform:      document.getElementById('i-platform').value,
+    format:        document.getElementById('i-format').value,
+    occasion:      document.getElementById('i-occasion').value,
+    goal:          document.getElementById('i-goal').value,
+    context:       document.getElementById('i-context').value.trim(),
+    variants:      Number(document.getElementById('i-variants').value),
+    hashtagsCount: Number(document.getElementById('i-hashtags').value)
+  };
+}
+
+const PLATFORM_GUIDANCE = {
+  instagram: 'منشور Instagram — يمكن أن يكون متوسطاً (80-200 كلمة). يبدأ بسطر hook قوي. فقرات قصيرة مفصولة بسطور فارغة.',
+  tiktok: 'caption لـ TikTok — قصير وحاد (40-100 كلمة). يبدأ بسؤال أو لقطة. يحفّز التفاعل (تعليق، حفظ).',
+  snapchat: 'نص Snapchat — قصير جداً (15-40 كلمة). جملة أو جملتين قويتين فقط.',
+  multi: 'منشور قابل للنشر على Instagram و TikTok معاً — متوسط الطول (60-140 كلمة).'
+};
+
+const FORMAT_GUIDANCE = {
+  caption: 'صورة ثابتة — الكابتشن يصف اللقطة ويربطها بشعور أو لحظة.',
+  reel: 'فيديو قصير — الكابتشن يكمّل الفيديو ولا يكرّره، يضيف عمقاً عاطفياً.',
+  story: 'Story مؤقت — مباشر، شخصي جداً، كأنه رسالة من صديقة.',
+  carousel: 'سلسلة صور — الكابتشن يفتح قصة تتطوّر مع تقليب الصور.'
+};
+
+const GOAL_GUIDANCE = {
+  awareness: 'الهدف: تعريف الأمهات بالعلامة والمنتج. لا تركّز على البيع، ركّز على القيمة والشعور.',
+  emotion: 'الهدف: بناء ارتباط عاطفي. ركّز على لحظة حياتية تتشارك فيها كل أم.',
+  conversion: 'الهدف: تحويل للشراء. يجب أن يحتوي دعوة واضحة للزيارة/الشراء، لكن بنبرة دافئة وليست متطفّلة.',
+  'ugc-trigger': 'الهدف: تحفيز الأمهات على مشاركة تجربتهن. اطرح سؤالاً يدعوهن للرد في التعليقات.',
+  testimonial: 'الهدف: عرض تجربة عميلة. اكتب كأنّ هذه شهادة حقيقية من أم سعودية.'
+};
+
+function buildPrompt(inputs, character, variantCount) {
+  const voiceProfile = getCharacterVoiceProfile(character);
+  const productName = SKU_NAMES[inputs.product];
+  const occasionGuidance = inputs.occasion === 'general' ? '' :
+    'المناسبة: ' + OCCASION_LABELS[inputs.occasion] + ' — اربط المنشور بهذه المناسبة بشكل طبيعي لا متكلّف.';
+
+  return `أنت كاتب محتوى لعلامة مَلْمَس (Malmas) السعودية لمنتجات الأطفال. شعار العلامة: "لأن كل لمسة تهم". الهوية: رمل دافئ، مريمية، وردي خفيف، ذهبي.
+
+${voiceProfile}
+
+**المهمة:** اكتب ${variantCount} ${variantCount === 1 ? 'منشور' : 'منشورات'} مختلف${variantCount === 1 ? '' : 'ة'} بصوت الشخصية المختارة لمنتج "${productName}".
+
+**تفاصيل:**
+- المنصة: ${PLATFORM_LABELS[inputs.platform]}
+- ${PLATFORM_GUIDANCE[inputs.platform]}
+- الصيغة: ${FORMAT_GUIDANCE[inputs.format]}
+- ${GOAL_GUIDANCE[inputs.goal]}
+${occasionGuidance ? '- ' + occasionGuidance : ''}
+${inputs.context ? '- تفاصيل إضافية من المسوّق: ' + inputs.context : ''}
+
+**قواعد إلزامية لكل منشور:**
+1. اللغة عربية أولاً وفصحى مبسّطة (لا لهجة عامية صريحة).
+2. الإيموجي المسموح فقط: 🤍 ✨ 🌿 🌙 🕊️ — استخدمها بتحفّظ شديد (1-3 كحد أقصى لكل منشور). ممنوع باتاً: 🔥 💯 🚀 💪 😍 🎉 ⚡ 💥 👑 💰.
+3. عدد الهاشتاقات: بالضبط ${inputs.hashtagsCount} هاشتاق — لا أكثر، لا أقل. الهاشتاقات بالعربية أساساً (مع 1 إنجليزي اختياري). أمثلة: #ملمس #حنين_الأمومة #أمومة_خليجية #لمسة_دافئة.
+4. لا مبالغة تسويقية ولا وعود طبية ("علاج"، "ثوري"، "الأفضل"، "معجزة" ممنوعة).
+5. لا تذكر أي علامة تجارية أخرى أو منتج منافس.
+6. النبرة المُلتزَمة بالشخصية المختارة (مِسْمِس أو ريم) ثابتة في كل المنشورات.
+
+**أخرج النتيجة بصيغة JSON صرف فقط — لا أي نص خارج JSON، ولا backticks ولا markdown:**
+
+{
+  "variants": [
+    {
+      "angle": "وصف موجز للزاوية أو الفكرة (5-10 كلمات)",
+      "caption": "نص المنشور كاملاً، مع تنسيق الفقرات بسطور فارغة. لا تضع الهاشتاقات هنا.",
+      "hashtags": ["#هاشتاق_1", "#هاشتاق_2", "#هاشتاق_3"]
+    }
+  ]
+}
+
+عدد العناصر في "variants" يجب أن يساوي ${variantCount} بالضبط.`;
+}
+
+// نداء الـ proxy وتحليل الـ JSON الرّاجع. يرمي Error برسالة عربية واضحة عند الفشل.
+async function callClaude(prompt, maxTokens = 2400) {
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify({ prompt, max_tokens: maxTokens })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const msg = data.error || ('HTTP ' + response.status);
+    const detail = data.detail ? ' — ' + data.detail : '';
+    throw new Error(msg + detail);
+  }
+  const text = data.text || '';
+  const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*$/gi, '').trim();
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('لم يتم إرجاع JSON صالح من النموذج.');
+    return JSON.parse(match[0]);
+  }
+}
+
+async function generatePost() {
+  if (!selectedCharacter) {
+    toast('الرجاء اختيار شخصية (مِسْمِس أو ريم) أولاً.', 'error');
+    return;
+  }
+  const inputs = readInputs();
+  if (!inputs.product) { toast('الرجاء اختيار المنتج.', 'error'); return; }
+
+  setLoading(true);
+  try {
+    const parsed = await callClaude(buildPrompt(inputs, selectedCharacter, inputs.variants));
+    lastGenerated = {
+      id: 'pst_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      character: selectedCharacter,
+      inputs,
+      output: parsed,
+      savedAt: Date.now()
+    };
+    renderOutput(parsed, { platform: inputs.platform, hashtagsCount: inputs.hashtagsCount });
+    // ملاحظة: لا نُظهر "تم التحميل" — هذا منشور جديد لا مُحمَّل من المكتبة.
+    hideLoadedBanner();
+  } catch (err) {
+    document.getElementById('output').innerHTML =
+      `<div class="compliance-banner warn"><strong>خطأ في التوليد:</strong> ${escapeHtml(err.message)}</div>
+       <div style="text-align:center; color: var(--muted); padding: 20px; font-size: 13px;">
+         تأكّد من اتصالك بالإنترنت أو من ضبط ANTHROPIC_API_KEY على الخادم، وحاول مرة أخرى.
+       </div>`;
+    toast('فشل التوليد.', 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// إعادة توليد بديل واحد فقط (مع الاحتفاظ بالبقية). يستبدل العنصر [idx] في output.variants.
+window.regenerateVariant = async function(idx) {
+  if (!lastGenerated || !lastGenerated.output || !Array.isArray(lastGenerated.output.variants)) return;
+  if (idx < 0 || idx >= lastGenerated.output.variants.length) return;
+  const btn = document.querySelector('.mini-btn[data-regen-idx="' + idx + '"]');
+  if (btn) { btn.classList.add('regenerating'); btn.textContent = 'جارٍ...'; }
+  try {
+    const inputs = lastGenerated.inputs;
+    const character = lastGenerated.character;
+    // اطلب بديلاً واحداً فقط
+    const parsed = await callClaude(buildPrompt(inputs, character, 1), 1200);
+    const newVariant = (parsed.variants && parsed.variants[0]);
+    if (!newVariant) throw new Error('لم يصل بديل جديد.');
+    lastGenerated.output.variants[idx] = newVariant;
+    renderOutput(lastGenerated.output, { platform: inputs.platform, hashtagsCount: inputs.hashtagsCount });
+    toast('تم توليد بديل جديد.', 'success');
+  } catch (err) {
+    if (btn) { btn.classList.remove('regenerating'); btn.textContent = '⟳ توليد بديل'; }
+    toast('فشل توليد البديل: ' + err.message, 'error');
+  }
+};
+
+function hideLoadedBanner() {
+  const el = document.getElementById('output');
+  if (!el) return;
+  // يُمسح تلقائياً عند إعادة الـ render — لا حاجة لشيء إضافي.
+}
+
+function setLoading(loading) {
+  document.getElementById('generate-btn').disabled = loading;
+  document.getElementById('btn-label').textContent = loading ? 'جارٍ التوليد...' : 'توليد المنشور';
+  if (loading) {
+    document.getElementById('output').innerHTML =
+      `<div class="loading"><div class="spinner"></div><div>جارٍ كتابة المنشور بصوت ${selectedCharacter === 'mismes' ? 'مِسْمِس' : 'ريم'}...</div></div>`;
+  }
+}
+
+// ============ Compliance checks ============
+function checkEmojis(text) {
+  const found = { forbidden: [], allowed: [] };
+  for (const e of FORBIDDEN_EMOJIS) {
+    if (text.includes(e)) found.forbidden.push(e);
+  }
+  for (const e of ALLOWED_EMOJIS) {
+    if (text.includes(e)) found.allowed.push(e);
+  }
+  return found;
+}
+
+// ============ Render ============
+function renderOutput(o, ctx) {
+  const variants = o.variants || [];
+  if (variants.length === 0) {
+    document.getElementById('output').innerHTML = '<div class="compliance-banner warn">لم يتم توليد أي منشور.</div>';
+    return;
+  }
+
+  // Combined compliance check across all variants
+  const allText = variants.map(v => v.caption + ' ' + (v.hashtags || []).join(' ')).join('\n');
+  const emojis = checkEmojis(allText);
+  const totalHashtags = variants.every(v => (v.hashtags || []).length === ctx.hashtagsCount);
+
+  let banner = '';
+  if (emojis.forbidden.length > 0) {
+    banner = `<div class="compliance-banner warn"><strong>⚠ إيموجي ممنوع:</strong> ${emojis.forbidden.join(' ')} — راجع المحتوى يدوياً.</div>`;
+  } else if (!totalHashtags) {
+    banner = `<div class="compliance-banner warn"><strong>⚠</strong> عدد الهاشتاقات لا يطابق الطلب في بعض المنشورات.</div>`;
+  } else {
+    banner = `<div class="compliance-banner">✓ المحتوى يلتزم بقواعد مَلْمَس — الإيموجي والهاشتاقات ضمن الحدود.</div>`;
+  }
+
+  const charClass = selectedCharacter;
+  const platformLabel = PLATFORM_LABELS[ctx.platform];
+  const limit = PLATFORM_LIMITS[ctx.platform] || 2200;
+
+  // نخزّن النصوص في كائنات على window — لا نضع JSON داخل onclick (يكسر مع العربية).
+  window.__postCopyFull = variants.map(v => (v.caption || '') + '\n\n' + (v.hashtags || []).join(' '));
+  window.__postCopyHashtags = variants.map(v => (v.hashtags || []).join(' '));
+
+  const variantsHtml = variants.map((v, i) => {
+    const captionLen = (v.caption || '').length;
+    const overLimit = captionLen > limit;
+    return `<div class="post-card ${charClass}">
+      <div class="post-card-head">
+        <span class="post-platform">${escapeHtml(platformLabel)}</span>
+        <span style="font-size:13px; color:var(--navy); font-weight:500;">${escapeHtml(v.angle || ('اقتراح ' + (i+1)))}</span>
+        <span class="post-variant">اقتراح ${i+1} من ${variants.length}</span>
+      </div>
+      <div class="post-caption">${escapeHtml(v.caption || '—')}</div>
+      <div class="post-hashtags">
+        ${(v.hashtags || []).map(h => '<span class="hashtag">' + escapeHtml(h) + '</span>').join('')}
+      </div>
+      <div class="post-meta-row">
+        <span class="char-count ${overLimit ? 'over' : ''}"><span class="num">${captionLen}</span> / ${limit} حرف</span>
+        <span><span class="num">${(v.hashtags || []).length}</span> هاشتاق</span>
+        <div class="variant-actions">
+          <button class="mini-btn" data-regen-idx="${i}" onclick="regenerateVariant(${i})">⟳ توليد بديل</button>
+          <button class="mini-btn" data-copy-hashtags="${i}">نسخ الهاشتاقات</button>
+          <button class="copy-btn" data-copy-full="${i}">نسخ المنشور كاملاً</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const saveBtn = `<button class="btn btn-ghost" id="save-lib-btn" style="margin-top:16px; width:100%; justify-content:center;">حفظ في المكتبة</button>`;
+
+  const out = document.getElementById('output');
+  out.innerHTML = banner + variantsHtml + saveBtn;
+
+  // ربط أزرار النسخ بالنصوص دون حقن JSON في الـ HTML.
+  out.querySelectorAll('[data-copy-full]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.dataset.copyFull);
+      copyPost(btn, window.__postCopyFull[idx] || '');
+    });
+  });
+  out.querySelectorAll('[data-copy-hashtags]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.dataset.copyHashtags);
+      copyPost(btn, window.__postCopyHashtags[idx] || '');
+    });
+  });
+  const saveEl = out.querySelector('#save-lib-btn');
+  if (saveEl) saveEl.addEventListener('click', saveLastGenerated);
+}
+
+async function copyPost(btn, text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    const original = btn.textContent;
+    btn.classList.add('copied');
+    btn.textContent = '✓ تم النسخ';
+    setTimeout(() => { btn.classList.remove('copied'); btn.textContent = original; }, 1500);
+  } catch { toast('فشل النسخ — انسخ يدوياً.', 'error'); }
+}
+
+async function saveLastGenerated() {
+  if (!lastGenerated) { toast('لا يوجد منشور لحفظه.', 'error'); return; }
+  await persistPost(lastGenerated);
+  // إذا كان موجوداً مسبقاً في المكتبة (مُحمَّل ثم أُعيد توليد بديل)، حدّث مكانه بدل المُضاعفة.
+  const idx = library.findIndex(x => x.id === lastGenerated.id);
+  if (idx >= 0) library[idx] = lastGenerated;
+  else library.unshift(lastGenerated);
+  renderLibrary();
+  toast('تم الحفظ في المكتبة.', 'success');
+}
+
+window.loadLibraryEntry = function(id) {
+  const l = library.find(x => x.id === id);
+  if (!l) return;
+  selectedCharacter = l.character;
+  document.querySelectorAll('.character-card').forEach(c => c.classList.toggle('active', c.dataset.character === l.character));
+  document.getElementById('i-product').value = l.inputs.product || '';
+  document.getElementById('i-platform').value = l.inputs.platform || 'instagram';
+  document.getElementById('i-format').value = l.inputs.format || 'caption';
+  document.getElementById('i-occasion').value = l.inputs.occasion || 'general';
+  document.getElementById('i-goal').value = l.inputs.goal || 'awareness';
+  document.getElementById('i-context').value = l.inputs.context || '';
+  document.getElementById('i-variants').value = l.inputs.variants || 2;
+  document.getElementById('i-hashtags').value = l.inputs.hashtagsCount || 3;
+  lastGenerated = l;
+  renderOutput(l.output, { platform: l.inputs.platform, hashtagsCount: l.inputs.hashtagsCount });
+  toast('تم تحميل المنشور المحفوظ.', 'success');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.deleteLibraryEntry = async function(id) {
+  const l = library.find(x => x.id === id);
+  if (!l) return;
+  const ok = await confirmModal('حذف من المكتبة', 'حذف هذا المنشور نهائياً؟', 'حذف');
+  if (!ok) return;
+  await removePost(id);
+  library = library.filter(x => x.id !== id);
+  renderLibrary();
+  toast('تم الحذف.', 'success');
+};
+
+// ============ Library filters ============
+function applyLibFilters(list) {
+  const q = (libFilters.search || '').toLowerCase();
+  return list.filter(l => {
+    if (libFilters.character && l.character !== libFilters.character) return false;
+    if (libFilters.platform && (l.inputs.platform || '') !== libFilters.platform) return false;
+    if (libFilters.product && (l.inputs.product || '') !== libFilters.product) return false;
+    if (q) {
+      const variants = (l.output && l.output.variants) || [];
+      const hay = variants.map(v => (v.caption || '') + ' ' + (v.angle || '') + ' ' + (v.hashtags || []).join(' ')).join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderLibrary() {
+  const tbody = document.getElementById('library-rows');
+  const empty = document.getElementById('empty-lib');
+  const filtered = applyLibFilters(library);
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    const hasFilters = libFilters.search || libFilters.character || libFilters.platform || libFilters.product;
+    empty.textContent = (library.length > 0 && hasFilters)
+      ? 'لا نتائج للفلاتر الحالية — جرّب توسيع البحث.'
+      : 'احفظ منشوراً مُولَّداً لتجد كل نسخك هنا.';
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = filtered.map(l => {
+    const date = new Date(l.savedAt).toISOString().slice(0, 10);
+    const charLabel = l.character === 'mismes' ? 'مِسْمِس' : 'ريم';
+    const charColor = l.character === 'mismes' ? 'var(--sage-deep)' : 'var(--sand-deep)';
+    return `<tr>
+      <td><span style="color:${charColor}; font-weight:600;">${charLabel}</span></td>
+      <td>${escapeHtml(SKU_NAMES[l.inputs.product] || l.inputs.product || '—')}</td>
+      <td style="font-size:12px;">${escapeHtml(PLATFORM_LABELS[l.inputs.platform] || '—')}</td>
+      <td style="font-size:12px;">${escapeHtml(OCCASION_LABELS[l.inputs.occasion] || '—')}</td>
+      <td class="num" style="font-size:12px; color: var(--muted);">${date}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn-icon" onclick="loadLibraryEntry('${l.id}')" title="تحميل">↺</button>
+        <button class="btn-icon" onclick="deleteLibraryEntry('${l.id}')" title="حذف" style="color: var(--rose-deep);">×</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function exportLibrary() {
+  if (library.length === 0) { toast('لا توجد منشورات للتصدير.', 'error'); return; }
+  const headers = ['Character','Product','Platform','Format','Occasion','Goal','Variant Angle','Caption','Hashtags','Saved'];
+  const rows = [];
+  for (const l of library) {
+    const charLabel = l.character === 'mismes' ? 'Mismes' : 'Reem';
+    for (const v of (l.output.variants || [])) {
+      rows.push([
+        charLabel,
+        SKU_NAMES[l.inputs.product] || l.inputs.product,
+        PLATFORM_LABELS[l.inputs.platform],
+        l.inputs.format, l.inputs.occasion, l.inputs.goal,
+        v.angle, v.caption, (v.hashtags || []).join(' '),
+        new Date(l.savedAt).toISOString().slice(0,10)
+      ].map(val => {
+        const s = String(val ?? '').replace(/\n/g, ' ');
+        return /[",]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }).join(','));
+    }
+  }
+  const csv = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'malmas_posts_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function download(filename, content, mime) {
+  const blob = new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportLibraryJSON() {
+  if (library.length === 0) { toast('لا توجد منشورات للتصدير.', 'error'); return; }
+  download(
+    'malmas_posts_' + new Date().toISOString().slice(0,10) + '.json',
+    JSON.stringify(library, null, 2),
+    'application/json;charset=utf-8'
+  );
+  toast('تم تصدير JSON.', 'success');
+}
+
+async function importLibraryJSON(file) {
+  let raw;
+  try {
+    const text = await file.text();
+    raw = JSON.parse(text);
+  } catch {
+    toast('الملف ليس JSON صالحاً.', 'error');
+    return;
+  }
+  const list = Array.isArray(raw) ? raw : [raw];
+  let added = 0;
+  for (const p of list) {
+    if (!p || !p.character || !p.inputs || !p.output) continue;
+    const post = {
+      character: p.character,
+      inputs: p.inputs,
+      output: p.output,
+      id: 'pst_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      savedAt: Date.now()
+    };
+    await persistPost(post);
+    library.unshift(post);
+    added++;
+  }
+  renderLibrary();
+  if (added === 0) toast('لم يتم تعريف أي منشور في الملف.', 'error');
+  else toast('تم استيراد ' + added + ' منشور.', 'success');
+}
+
+function showEmptyOutput() {
+  document.getElementById('output').innerHTML =
+    `<div class="output-empty">
+      <div class="empty-icon">◆</div>
+      <div style="font-weight:500; color: var(--navy); margin-bottom:6px;">لم يتم توليد منشور بعد</div>
+      <div>اختر شخصية (مِسْمِس أو ريم)، ثم املأ التفاصيل واضغط "توليد المنشور".</div>
+    </div>`;
+}
+
+document.getElementById('generate-btn').addEventListener('click', generatePost);
+document.getElementById('export-btn').addEventListener('click', exportLibrary);
+document.getElementById('export-json-btn').addEventListener('click', exportLibraryJSON);
+document.getElementById('import-json-btn').addEventListener('click', () => document.getElementById('import-file').click());
+document.getElementById('import-file').addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (f) await importLibraryJSON(f);
+  e.target.value = '';
+});
+
+// Library filters
+const onLibFilter = () => {
+  libFilters.search    = document.getElementById('filter-search').value.trim();
+  libFilters.character = document.getElementById('filter-character').value;
+  libFilters.platform  = document.getElementById('filter-platform').value;
+  libFilters.product   = document.getElementById('filter-product').value;
+  renderLibrary();
+};
+document.getElementById('filter-search').addEventListener('input', onLibFilter);
+document.getElementById('filter-character').addEventListener('change', onLibFilter);
+document.getElementById('filter-platform').addEventListener('change', onLibFilter);
+document.getElementById('filter-product').addEventListener('change', onLibFilter);
+document.getElementById('clear-filters').addEventListener('click', () => {
+  document.getElementById('filter-search').value = '';
+  document.getElementById('filter-character').value = '';
+  document.getElementById('filter-platform').value = '';
+  document.getElementById('filter-product').value = '';
+  libFilters = { search: '', character: '', platform: '', product: '' };
+  renderLibrary();
+});
+
+showEmptyOutput();
+loadLibrary();
+</script>
+</body>
+</html>

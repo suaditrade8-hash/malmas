@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَلْمَس · بوابات الموافقة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --surface: #FFFFFF;
+    --navy: #1E2A44;
+    --navy-deep: #14203A;
+    --gold: #C9A961;
+    --gold-soft: #E5D5A8;
+    --gold-deep: #A88841;
+    --sage: #8B9A7E;
+    --sage-soft: #DCE3D3;
+    --sage-deep: #5F7050;
+    --rose: #C97B7B;
+    --rose-soft: #F0DADA;
+    --rose-deep: #8E4A4A;
+    --amber: #D69A4C;
+    --amber-soft: #F5E2C0;
+    --muted: #6B6F7A;
+    --muted-soft: #A8AAB0;
+    --ink: #2A2E36;
+    --border: #E8E2D5;
+    --border-soft: #F0EBE0;
+    --shade: #F5F1E8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); color: var(--ink); font-family: 'Tajawal', system-ui, sans-serif; font-size: 15px; line-height: 1.65; }
+  .num { font-family: 'Inter', sans-serif; font-feature-settings: "tnum" 1; direction: ltr; unicode-bidi: isolate; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  /* Header */
+  header { display: flex; flex-direction: column; gap: 8px; padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+  .brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .wordmark { font-family: 'Amiri', serif; font-size: 38px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+  .divider { color: var(--gold); font-size: 22px; }
+  .page-title { font-size: 18px; font-weight: 500; color: var(--ink); }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .tag { display: inline-block; background: var(--shade); color: var(--navy); font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 4px; margin-inline-start: 8px; }
+
+  /* Project switcher */
+  .project-switcher { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; }
+  .project-switcher .lbl { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .project-switcher select { font-family: inherit; font-size: 14px; padding: 7px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--ink); font-weight: 500; min-width: 240px; }
+  .project-switcher select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15); }
+  .project-switcher .btn { font-family: inherit; font-size: 13px; padding: 7px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid var(--border); background: var(--surface); color: var(--navy); font-weight: 500; }
+  .project-switcher .btn:hover { border-color: var(--gold); background: var(--shade); }
+  .project-meta { margin-inline-start: auto; font-size: 13px; color: var(--muted); }
+  .project-meta .num { color: var(--navy); font-weight: 600; }
+
+  /* Progress strip */
+  .strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 28px; position: relative; }
+  .strip-step { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 12px; text-align: center; position: relative; cursor: pointer; transition: all 0.15s; }
+  .strip-step:hover { border-color: var(--gold); transform: translateY(-1px); }
+  .strip-step.status-approved { background: var(--sage-soft); border-color: var(--sage); }
+  .strip-step.status-in-review { background: var(--amber-soft); border-color: var(--amber); }
+  .strip-step.status-rejected { background: var(--rose-soft); border-color: var(--rose); }
+  .strip-step.status-blocked { opacity: 0.55; }
+  .strip-num { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+  .strip-name { font-size: 13px; font-weight: 500; color: var(--navy); line-height: 1.3; }
+  .strip-status { font-size: 11px; color: var(--muted); margin-top: 6px; font-weight: 500; }
+  .strip-step.status-approved .strip-status { color: var(--sage-deep); }
+  .strip-step.status-in-review .strip-status { color: var(--gold-deep); }
+  .strip-step.status-rejected .strip-status { color: var(--rose-deep); }
+
+  /* Overall stats */
+  .overall { background: var(--navy); color: var(--surface); border-radius: 10px; padding: 18px 24px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .overall-left { display: flex; flex-direction: column; gap: 2px; }
+  .overall-title { font-size: 14px; color: var(--gold-soft); font-weight: 500; }
+  .overall-value { font-family: 'Amiri', serif; font-size: 24px; color: var(--surface); }
+  .progress-bar { flex: 1; max-width: 360px; min-width: 200px; height: 10px; background: rgba(255,255,255,0.12); border-radius: 5px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--gold); border-radius: 5px; transition: width 0.4s; }
+
+  /* Gate cards */
+  .gates { display: flex; flex-direction: column; gap: 16px; }
+  .gate { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: all 0.2s; }
+  .gate.blocked { opacity: 0.6; }
+  .gate-head { display: flex; align-items: center; gap: 16px; padding: 18px 24px; cursor: pointer; user-select: none; border-bottom: 1px solid transparent; }
+  .gate-head:hover { background: var(--shade); }
+  .gate.open .gate-head { border-bottom-color: var(--border-soft); }
+  .gate-badge { width: 44px; height: 44px; border-radius: 50%; background: var(--shade); display: flex; align-items: center; justify-content: center; font-family: 'Amiri', serif; font-size: 22px; color: var(--navy); font-weight: 700; flex-shrink: 0; border: 2px solid var(--border); }
+  .gate.status-approved .gate-badge { background: var(--sage-soft); border-color: var(--sage); color: var(--sage-deep); }
+  .gate.status-in-review .gate-badge { background: var(--amber-soft); border-color: var(--amber); color: var(--gold-deep); }
+  .gate.status-rejected .gate-badge { background: var(--rose-soft); border-color: var(--rose); color: var(--rose-deep); }
+  .gate-title-block { flex: 1; min-width: 0; }
+  .gate-title { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+  .gate-desc { font-size: 13px; color: var(--muted); }
+  .gate-status-pill { font-size: 12px; padding: 5px 12px; border-radius: 4px; font-weight: 500; background: var(--shade); color: var(--muted); flex-shrink: 0; }
+  .gate.status-approved .gate-status-pill { background: var(--sage-soft); color: var(--sage-deep); }
+  .gate.status-in-review .gate-status-pill { background: var(--amber-soft); color: var(--gold-deep); }
+  .gate.status-rejected .gate-status-pill { background: var(--rose-soft); color: var(--rose-deep); }
+  .chev { font-size: 14px; color: var(--muted); transition: transform 0.2s; }
+  .gate.open .chev { transform: rotate(-180deg); }
+
+  /* Gate body */
+  .gate-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .gate.open .gate-body { max-height: 2400px; }
+  .gate-body-inner { padding: 20px 24px 24px; }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .field input, .field select, .field textarea { font-family: inherit; font-size: 14px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--ink); width: 100%; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15); }
+  .field.wide { grid-column: 1 / -1; }
+
+  .checklist-title { font-size: 13px; color: var(--muted); font-weight: 700; margin-bottom: 10px; text-transform: none; }
+  .checklist { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border: 1px solid var(--border-soft); border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+  .check-item:hover { background: var(--shade); border-color: var(--border); }
+  .check-item.checked { background: var(--sage-soft); border-color: var(--sage); }
+  .check-box { width: 18px; height: 18px; border: 2px solid var(--muted-soft); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--surface); background: var(--surface); margin-top: 1px; transition: all 0.15s; }
+  .check-item.checked .check-box { background: var(--sage-deep); border-color: var(--sage-deep); }
+  .check-text { font-size: 14px; color: var(--ink); flex: 1; line-height: 1.5; }
+  .check-item.checked .check-text { color: var(--sage-deep); }
+
+  .completion-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; font-size: 13px; color: var(--muted); }
+  .mini-progress { flex: 1; max-width: 200px; height: 6px; background: var(--border-soft); border-radius: 3px; overflow: hidden; }
+  .mini-fill { height: 100%; background: var(--sage); transition: width 0.3s; }
+
+  .log-section { border-top: 1px solid var(--border-soft); padding-top: 16px; margin-top: 6px; }
+  .log-title { font-size: 13px; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
+  .log-list { list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; }
+  .log-entry { font-size: 12px; padding: 6px 10px; background: var(--shade); border-radius: 4px; color: var(--ink); border-inline-start: 3px solid var(--gold); }
+  .log-entry .log-time { font-family: 'Inter', sans-serif; color: var(--muted); margin-inline-end: 8px; font-size: 11px; }
+  .log-empty { font-size: 12px; color: var(--muted); font-style: italic; }
+
+  .blocked-notice { background: var(--shade); border: 1px dashed var(--border); border-radius: 6px; padding: 12px 16px; font-size: 13px; color: var(--muted); text-align: center; margin: 8px 0; }
+  .blocked-notice strong { color: var(--rose-deep); }
+
+  /* Buttons */
+  .btn { font-family: inherit; font-size: 14px; font-weight: 500; padding: 9px 18px; border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+  .btn-primary { background: var(--navy); color: var(--surface); border-color: var(--navy); }
+  .btn-primary:hover { background: var(--navy-deep); }
+  .btn-ghost { background: transparent; color: var(--navy); border-color: var(--border); }
+  .btn-ghost:hover { background: var(--shade); border-color: var(--gold); }
+  .btn-danger { background: transparent; color: var(--rose-deep); border-color: var(--rose-soft); }
+  .btn-danger:hover { background: var(--rose-soft); }
+
+  /* Footer */
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 13px; }
+  footer .quote { font-family: 'Amiri', serif; font-size: 15px; color: var(--gold); }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20,32,58,0.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--surface); border-radius: 12px; padding: 28px; max-width: 480px; width: 100%; }
+  .modal h3 { font-family: 'Amiri', serif; font-size: 22px; color: var(--navy); margin-bottom: 8px; }
+  .modal p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+  @media (max-width: 880px) {
+    .field-grid { grid-template-columns: 1fr; }
+    .strip { grid-template-columns: repeat(3, 1fr); }
+    .wrap { padding: 20px 16px 60px; }
+    .wordmark { font-size: 30px; }
+    .gate-head { padding: 14px 16px; gap: 12px; }
+    .gate-body-inner { padding: 16px; }
+    .gate-status-pill { font-size: 11px; padding: 4px 8px; }
+  }
+
+  /* ============ Added: Toolbar + new badges + evidence + print ============ */
+  .project-switcher .btn-icon-sm {
+    font-family: inherit; font-size: 13px; padding: 7px 12px;
+    border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--navy); font-weight: 500;
+  }
+  .project-switcher .btn-icon-sm:hover { border-color: var(--gold); background: var(--shade); }
+  .project-switcher .sep { width: 1px; background: var(--border); align-self: stretch; margin: 0 4px; }
+
+  /* Due-soon / overdue indicators */
+  .badge-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    font-weight: 500; font-family: inherit; line-height: 1.5;
+  }
+  .badge-pill.overdue { background: var(--rose-soft); color: var(--rose-deep); }
+  .badge-pill.due-soon { background: var(--amber-soft); color: var(--gold-deep); }
+  .badge-pill.on-time { background: var(--sage-soft); color: var(--sage-deep); }
+  .strip-step .strip-badge { margin-top: 4px; }
+  .gate-head .gate-badge-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  /* Date variance */
+  .variance { font-size: 11px; color: var(--muted); font-family: 'Inter', sans-serif; margin-top: 2px; }
+  .variance.late { color: var(--rose-deep); }
+  .variance.early { color: var(--sage-deep); }
+
+  /* Evidence section */
+  .evidence-section { border-top: 1px solid var(--border-soft); padding-top: 16px; margin-top: 16px; }
+  .evidence-title { font-size: 13px; color: var(--muted); font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+  .evidence-list { display: flex; flex-direction: column; gap: 8px; }
+  .evidence-row {
+    display: grid; grid-template-columns: 160px 1fr auto; gap: 10px;
+    align-items: center; padding: 8px 12px;
+    background: var(--shade); border-radius: 6px;
+    border-inline-start: 3px solid var(--gold);
+  }
+  .evidence-row input { font-family: inherit; font-size: 13px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--ink); width: 100%; }
+  .evidence-row input:focus { outline: none; border-color: var(--gold); }
+  .evidence-row .ev-link { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--gold-deep); text-decoration: none; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); white-space: nowrap; }
+  .evidence-row .ev-link:hover { border-color: var(--gold); background: var(--shade); }
+  .evidence-row .ev-remove { font-family: inherit; font-size: 12px; color: var(--rose-deep); background: transparent; border: 1px solid var(--rose-soft); border-radius: 4px; padding: 4px 10px; cursor: pointer; }
+  .evidence-row .ev-remove:hover { background: var(--rose-soft); }
+  .add-evidence-btn { font-family: inherit; font-size: 12px; padding: 6px 14px; border: 1px dashed var(--border); background: transparent; border-radius: 4px; color: var(--gold-deep); cursor: pointer; margin-top: 8px; }
+  .add-evidence-btn:hover { border-color: var(--gold); background: var(--shade); }
+  .ev-empty { font-size: 12px; color: var(--muted); font-style: italic; padding: 6px 0; }
+
+  /* Filename hidden input (for import) */
+  .hidden-input { display: none; }
+
+  /* Print styles — produce a clean PDF via window.print() */
+  @media print {
+    body { background: white; color: black; font-size: 12px; }
+    .project-switcher, .modal-overlay, footer, .chev { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; margin: 0; }
+    header { border-bottom: 2px solid #333; margin-bottom: 16px; padding-bottom: 12px; page-break-after: avoid; }
+    .strip { grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 18px; page-break-inside: avoid; }
+    .strip-step { border: 1px solid #999 !important; box-shadow: none; padding: 8px 6px; }
+    .overall { background: #f5f1e8 !important; color: black !important; border: 1px solid #999; page-break-inside: avoid; }
+    .overall .overall-title { color: #555 !important; }
+    .overall .overall-value, .overall-value .num { color: black !important; }
+    .progress-bar { background: #ddd !important; }
+    .progress-fill { background: #555 !important; }
+    .gate { border: 1px solid #999 !important; page-break-inside: avoid; box-shadow: none !important; margin-bottom: 8px; }
+    .gate-body { max-height: none !important; }
+    .gate-body-inner { padding: 12px 16px !important; }
+    .check-item.checked { background: #e8f0e0 !important; border-color: #5f7050 !important; }
+    .check-item:not(.checked) { background: white !important; }
+    .check-box { border: 1px solid #555 !important; }
+    .badge-pill.overdue { background: #f0dada !important; color: #8e4a4a !important; }
+    .badge-pill.due-soon { background: #f5e2c0 !important; color: #a88841 !important; }
+    .log-list { max-height: none !important; }
+    .add-evidence-btn, .ev-remove { display: none !important; }
+    .evidence-row input { border: none !important; padding: 2px !important; background: transparent !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <span class="wordmark">مَلْمَس</span>
+      <span class="divider">◆</span>
+      <span class="page-title">بوابات الموافقة</span>
+      <span class="tag">6 Gates · منع Factory Drift</span>
+    </div>
+    <p class="subtitle">لا تُتجاوز بوابة قبل إثبات الموافقة على ما قبلها — انضباط تسلسلي للوقاية من انحراف المصنع.</p>
+  </header>
+
+  <div class="project-switcher">
+    <span class="lbl">المنتج:</span>
+    <select id="project-select"></select>
+    <button class="btn-icon-sm" id="new-project-btn" title="مشروع جديد">+ جديد</button>
+    <button class="btn-icon-sm" id="duplicate-project-btn" title="نسخ المشروع الحالي مع تفريغ الحالات">⎘ نسخ</button>
+    <button class="btn-icon-sm" id="rename-project-btn" title="إعادة تسمية">✎ تسمية</button>
+    <button class="btn-icon-sm" id="delete-project-btn" title="حذف" style="color: var(--rose-deep);">× حذف</button>
+    <div class="sep"></div>
+    <button class="btn-icon-sm" id="export-json-btn" title="تصدير JSON للمشروع الحالي (نسخة احتياطية)">⇣ JSON</button>
+    <button class="btn-icon-sm" id="export-csv-btn" title="تصدير CSV لكل المشاريع">⇣ CSV</button>
+    <button class="btn-icon-sm" id="import-json-btn" title="استيراد JSON">⇡ استيراد</button>
+    <input type="file" id="import-file" class="hidden-input" accept="application/json,.json">
+    <button class="btn-icon-sm" id="print-btn" title="طباعة / PDF">🖨 طباعة</button>
+    <span class="project-meta">آخر تحديث: <span class="num" id="last-updated">—</span></span>
+  </div>
+
+  <div class="overall">
+    <div class="overall-left">
+      <div class="overall-title">المرحلة الحالية</div>
+      <div class="overall-value" id="current-stage">—</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="overall-fill" style="width:0%"></div></div>
+    <div style="text-align:end;">
+      <div class="overall-title">التقدم الكلي</div>
+      <div class="overall-value"><span class="num" id="overall-pct">0</span>%</div>
+    </div>
+  </div>
+
+  <div class="strip" id="strip"></div>
+
+  <section class="gates" id="gates"></section>
+
+  <footer>
+    <div class="quote">لأن كل لمسة تهم</div>
+    <div style="margin-top:6px;">انضباط التسلسل = جودة المنتج النهائي</div>
+  </footer>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title">—</h3>
+    <p id="modal-message">—</p>
+    <div class="field wide" id="modal-input-wrap">
+      <label for="modal-input" id="modal-input-label">الاسم</label>
+      <input id="modal-input" type="text" placeholder="">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modal-cancel">إلغاء</button>
+      <button class="btn btn-primary" id="modal-ok">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ============ Storage adapter (localStorage-backed) ============
+window.storage = (function () {
+  return {
+    async get(key) {
+      try { const v = localStorage.getItem(key); return v == null ? null : { value: v }; }
+      catch { return null; }
+    },
+    async set(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { console.error('storage.set failed', e); }
+    },
+    async delete(key) {
+      try { localStorage.removeItem(key); } catch { }
+    },
+    async list(prefix) {
+      const keys = [];
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(prefix)) keys.push(k);
+        }
+      } catch { }
+      return { keys };
+    }
+  };
+})();
+
+// ============ Gate Templates ============
+const GATE_TEMPLATES = [
+  {
+    id: 1,
+    name: 'اعتماد المفهوم',
+    desc: 'Concept Approval — قبول الفكرة الإبداعية قبل أي إنفاق على التصميم التفصيلي.',
+    checklist: [
+      'تحديد مفهوم التصميم بصرياً (لوحة موود، عيّنات ألوان، مرجع أسلوب)',
+      'مطابقة هوية مَلْمَس (رمل، مريمية، وردي خفيف، ذهبي)',
+      'تحديد موقع الشخصية (ريم / مِسْمِس) وأسلوب الظهور',
+      'تجنّب أي مرجع لمنتج منافس في البريف الإبداعي (IP hygiene)',
+      'مراجعة الأصالة الثقافية: لا شخصيات أوروبية معمّمة',
+      'موافقة المؤسس على المفهوم العام'
+    ]
+  },
+  {
+    id: 2,
+    name: 'ملفات الفيكتور النهائية',
+    desc: 'Vector Files — تسليم ملفات AI/EPS/PDF بدقة طباعة، قابلة للتصنيع.',
+    checklist: [
+      'ملف AI/EPS أصلي بطبقات منظّمة ومسمّاة بالعربية والإنجليزية',
+      'دقة 300 DPI وألوان CMYK (وليس RGB)',
+      'كل النصوص العربية مُحوَّلة إلى Outlines (لتجنّب فقدان الخط)',
+      'هوامش Bleed 3mm على كل جوانب التصميم',
+      'تصدير PDF/X للمصنّع + معاينة PNG منخفضة الدقة للأرشيف',
+      'ملف Pantone references للألوان الذهبية والكحلية المعتمدة',
+      'موافقة مكتوبة من المؤسس على الملفات النهائية قبل إرسالها للمصنع'
+    ]
+  },
+  {
+    id: 3,
+    name: 'عيّنة ما قبل الإنتاج',
+    desc: 'Pre-Production Sample — عيّنة فعلية للتحقق البصري واللمسي قبل دفعة الإنتاج.',
+    checklist: [
+      'استلام 2-3 عيّنات بعد فحص فوتوغرافي مفصّل من المصنع',
+      'مطابقة الأبعاد الفعلية للمواصفات (±3mm حد أقصى)',
+      'مطابقة دقة الطباعة العربية (الحروف، التشكيل، النقاط)',
+      'مطابقة الألوان مع Pantone references',
+      'الملمس واللمسة الفعلية تطابق توقّعات الجمهور',
+      'تصوير العيّنات بإضاءة طبيعية وأرشفتها بالتاريخ',
+      'موافقة مكتوبة على العيّنة الفائزة (مع توقيع ورقم العيّنة)'
+    ]
+  },
+  {
+    id: 4,
+    name: 'اختبار المواد والسلامة',
+    desc: 'Material & Safety Test — التحقق من سلامة المواد قبل الإنتاج الكبير.',
+    checklist: [
+      'XPE Foam (وليس EPE) — التحقق من النوع بشهادة المصنع',
+      'سُمك 2cm فعلي (قياس بالميكرومتر، وليس وعد المصنع)',
+      'فترة Off-gassing 72 ساعة قبل التغليف',
+      'شهادة EN71-1,2,3 (سلامة الألعاب) سارية',
+      'شهادة CPSIA أو ASTM F963 (US baby safety)',
+      'تأكيد BPA-Free + Phthalates-Free + Formamide-Free',
+      'تقرير معمل مستقل (SGS أو Bureau Veritas) — وليس فقط شهادة المصنع'
+    ]
+  },
+  {
+    id: 5,
+    name: 'الإنتاج التجريبي',
+    desc: 'Pilot Run — تشغيل 100 وحدة لاختبار خط الإنتاج قبل الطلبية الكاملة.',
+    checklist: [
+      'طلبية 100 وحدة بنفس مواصفات الإنتاج النهائي',
+      'فحص عشوائي على 10% من الدفعة (10 وحدات)',
+      'تأكيد ثبات الألوان عبر الوحدات (لا انحراف بين وحدة وأخرى)',
+      'تأكيد جودة التغليف الفردي + الجماعي (carton)',
+      'تأكيد ملصقات SABER + Arabic labeling صحيحة',
+      'تأكيد ثبات الوزن لكل وحدة (لا حشو ناقص أو زائد)',
+      'موافقة على الانتقال إلى الطلبية الكاملة'
+    ]
+  },
+  {
+    id: 6,
+    name: 'الفحص النهائي قبل الشحن',
+    desc: 'Final QC Pre-Shipment — فحص الطرف الثالث قبل دفع 70% الأخيرة.',
+    checklist: [
+      'حجز فحص SGS أو Bureau Veritas مسبقاً (lead time أسبوع)',
+      'فحص AQL 2.5 (للعيوب الرئيسية) — حد أقصى مقبول',
+      'فحص AQL 4.0 (للعيوب الثانوية) — حد أقصى مقبول',
+      'تأكيد كل صندوق shipping carton يحتوي العدد المطلوب',
+      'تأكيد ملصقات الشحن + barcodes واضحة وصحيحة',
+      'تصوير وثائقي: عيّنات عشوائية من 3 كراتين مختلفة',
+      'تقرير QC مكتوب + موافقة المؤسس على دفع 70% الأخيرة',
+      'تأكيد جاهزية وثائق SABER + Certificate of Origin + Bill of Lading'
+    ]
+  }
+];
+
+const STATUS_OPTIONS = [
+  { value: 'pending',    label: 'لم تبدأ' },
+  { value: 'in-review',  label: 'قيد المراجعة' },
+  { value: 'approved',   label: 'مُعتمدة' },
+  { value: 'rejected',   label: 'مرفوضة' }
+];
+
+const STATUS_LABEL = Object.fromEntries(STATUS_OPTIONS.map(s => [s.value, s.label]));
+
+// ============ State ============
+let projects = []; // [{id, name, gates: [...], createdAt, updatedAt}]
+let currentProjectId = null;
+let openGateId = null;
+
+function newGate(template) {
+  return {
+    id: template.id,
+    name: template.name,
+    desc: template.desc,
+    status: 'pending',
+    owner: '',
+    targetDate: '',
+    actualDate: '',
+    notes: '',
+    checklist: template.checklist.map((text, idx) => ({ idx, text, done: false })),
+    evidence: [], // [{label, url}]
+    log: []
+  };
+}
+
+// يضمن وجود الحقول الجديدة (evidence) على المشاريع المُحمّلة من نسخ قديمة.
+function migrateProject(p) {
+  if (!p || !Array.isArray(p.gates)) return p;
+  for (const g of p.gates) {
+    if (!Array.isArray(g.evidence)) g.evidence = [];
+  }
+  return p;
+}
+
+function newProject(name) {
+  return {
+    id: 'pj_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    name,
+    gates: GATE_TEMPLATES.map(t => newGate(t)),
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+}
+
+// ============ Storage ============
+async function loadAll() {
+  try {
+    const list = await window.storage.list('gates:pj:');
+    if (list && list.keys && list.keys.length) {
+      const items = await Promise.all(
+        list.keys.map(async k => {
+          try {
+            const r = await window.storage.get(k);
+            return r ? JSON.parse(r.value) : null;
+          } catch { return null; }
+        })
+      );
+      projects = items.filter(Boolean).map(migrateProject).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    }
+  } catch (e) { projects = []; }
+
+  if (projects.length === 0) {
+    // Seed with the SKU 3 Reem letter mat project per business priority
+    const seed = newProject('SKU 3 — سجادة الحروف (ريم)');
+    projects.push(seed);
+    await persistProject(seed);
+  }
+
+  try {
+    const cur = await window.storage.get('gates:current');
+    if (cur && cur.value && projects.find(p => p.id === cur.value)) {
+      currentProjectId = cur.value;
+    } else {
+      currentProjectId = projects[0].id;
+    }
+  } catch {
+    currentProjectId = projects[0].id;
+  }
+
+  renderProjectSwitcher();
+  renderAll();
+}
+
+async function persistProject(p) {
+  p.updatedAt = Date.now();
+  try { await window.storage.set('gates:pj:' + p.id, JSON.stringify(p)); } catch (e) { console.error('persist failed', e); }
+}
+
+async function removeProject(id) {
+  try { await window.storage.delete('gates:pj:' + id); } catch (e) { }
+}
+
+async function persistCurrent() {
+  try { await window.storage.set('gates:current', currentProjectId); } catch (e) { }
+}
+
+function currentProject() {
+  return projects.find(p => p.id === currentProjectId);
+}
+
+// ============ Logic ============
+function isGateUnlocked(gates, gateId) {
+  if (gateId === 1) return true;
+  const prev = gates.find(g => g.id === gateId - 1);
+  return prev && prev.status === 'approved';
+}
+
+function gateCompletionPct(gate) {
+  if (!gate.checklist.length) return 0;
+  const done = gate.checklist.filter(c => c.done).length;
+  return Math.round((done / gate.checklist.length) * 100);
+}
+
+function overallPct(gates) {
+  const approved = gates.filter(g => g.status === 'approved').length;
+  return Math.round((approved / gates.length) * 100);
+}
+
+function currentStageName(gates) {
+  // Find first non-approved gate
+  const next = gates.find(g => g.status !== 'approved');
+  if (!next) return 'مكتمل — جاهز للإنتاج النهائي';
+  if (next.status === 'rejected') return 'مرفوض — يحتاج معالجة: ' + next.name;
+  if (next.status === 'in-review') return 'قيد المراجعة: ' + next.name;
+  return 'البوابة التالية: ' + next.name;
+}
+
+function addLog(gate, message) {
+  const now = new Date();
+  // وقت محلّي (YYYY-MM-DD HH:MM) — أوضح للقارئ من UTC.
+  const pad = n => String(n).padStart(2, '0');
+  const timestamp = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+  gate.log.unshift({ time: timestamp, message });
+  if (gate.log.length > 30) gate.log.length = 30;
+}
+
+// ============ Helpers: due dates ============
+function daysBetween(isoDate) {
+  if (!isoDate) return null;
+  const t = new Date(isoDate + 'T00:00:00');
+  if (isNaN(t.getTime())) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.round((t - today) / (1000 * 60 * 60 * 24));
+}
+
+function gateUrgency(gate) {
+  if (gate.status === 'approved' || gate.status === 'rejected') return null;
+  const days = daysBetween(gate.targetDate);
+  if (days === null) return null;
+  if (days < 0) return { kind: 'overdue', label: 'متأخّر ' + Math.abs(days) + ' يوم', days };
+  if (days <= 3) return { kind: 'due-soon', label: 'يحلّ خلال ' + days + ' يوم', days };
+  return { kind: 'on-time', label: 'متبقّي ' + days + ' يوم', days };
+}
+
+function dateVariance(gate) {
+  if (!gate.targetDate || !gate.actualDate) return null;
+  const t = new Date(gate.targetDate + 'T00:00:00');
+  const a = new Date(gate.actualDate + 'T00:00:00');
+  if (isNaN(t.getTime()) || isNaN(a.getTime())) return null;
+  const days = Math.round((a - t) / (1000 * 60 * 60 * 24));
+  if (days === 0) return { kind: 'on-time', label: 'في الموعد' };
+  if (days > 0) return { kind: 'late', label: 'متأخّر ' + days + ' يوم' };
+  return { kind: 'early', label: 'مبكّر ' + Math.abs(days) + ' يوم' };
+}
+
+// ============ Rendering ============
+function renderProjectSwitcher() {
+  const sel = document.getElementById('project-select');
+  sel.innerHTML = projects.map(p =>
+    `<option value="${p.id}"${p.id === currentProjectId ? ' selected' : ''}>${escapeHtml(p.name)}</option>`
+  ).join('');
+}
+
+function renderAll() {
+  const p = currentProject();
+  if (!p) return;
+
+  // Last updated
+  document.getElementById('last-updated').textContent = new Date(p.updatedAt).toLocaleDateString('en-CA');
+
+  // Overall
+  document.getElementById('current-stage').textContent = currentStageName(p.gates);
+  const pct = overallPct(p.gates);
+  document.getElementById('overall-pct').textContent = pct;
+  document.getElementById('overall-fill').style.width = pct + '%';
+
+  renderStrip(p);
+  renderGates(p);
+}
+
+function renderStrip(p) {
+  const strip = document.getElementById('strip');
+  strip.innerHTML = p.gates.map(g => {
+    const blocked = !isGateUnlocked(p.gates, g.id);
+    const urg = gateUrgency(g);
+    const badge = urg && urg.kind !== 'on-time'
+      ? `<div class="strip-badge"><span class="badge-pill ${urg.kind}">${escapeHtml(urg.label)}</span></div>`
+      : '';
+    return `<div class="strip-step status-${g.status}${blocked ? ' status-blocked' : ''}" onclick="scrollToGate(${g.id})">
+      <div class="strip-num">بوابة ${g.id}</div>
+      <div class="strip-name">${escapeHtml(g.name)}</div>
+      <div class="strip-status">${STATUS_LABEL[g.status]}</div>
+      ${badge}
+    </div>`;
+  }).join('');
+}
+
+function renderGates(p) {
+  const container = document.getElementById('gates');
+  const showAll = openGateId === 'all';
+  container.innerHTML = p.gates.map(g => {
+    const blocked = !isGateUnlocked(p.gates, g.id);
+    const completion = gateCompletionPct(g);
+    const open = showAll || openGateId === g.id;
+    const urg = gateUrgency(g);
+    const variance = dateVariance(g);
+
+    const checklistHtml = g.checklist.map(c =>
+      `<div class="check-item${c.done ? ' checked' : ''}" onclick="toggleCheck(${g.id}, ${c.idx})">
+        <div class="check-box">${c.done ? '✓' : ''}</div>
+        <div class="check-text">${escapeHtml(c.text)}</div>
+      </div>`
+    ).join('');
+
+    const logHtml = g.log.length === 0
+      ? '<div class="log-empty">لا توجد تغييرات مُسجّلة بعد.</div>'
+      : '<ul class="log-list">' + g.log.map(l =>
+          `<li class="log-entry"><span class="log-time num">${escapeHtml(l.time)}</span>${escapeHtml(l.message)}</li>`
+        ).join('') + '</ul>';
+
+    // Evidence section
+    const evidenceItems = (g.evidence || []).map((ev, idx) => {
+      const safeUrl = (ev.url || '').replace(/"/g, '&quot;');
+      const isHttp = /^https?:\/\//i.test(ev.url || '');
+      return `<div class="evidence-row">
+        <input type="text" placeholder="مسمّى الدليل (مثال: تقرير SGS)" value="${escapeHtml(ev.label || '')}" onchange="updateEvidence(${g.id}, ${idx}, 'label', this.value)">
+        <input type="url" placeholder="https://… (Drive، Dropbox، صورة)" value="${safeUrl}" onchange="updateEvidence(${g.id}, ${idx}, 'url', this.value)" dir="ltr">
+        <div style="display:flex; gap:6px;">
+          ${isHttp ? `<a class="ev-link" href="${safeUrl}" target="_blank" rel="noopener">فتح ↗</a>` : ''}
+          <button class="ev-remove" onclick="removeEvidence(${g.id}, ${idx})">×</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    const evidenceHtml = `<div class="evidence-section">
+      <div class="evidence-title">
+        <span>الأدلّة الموثّقة <span style="font-weight:400; color: var(--muted);">(${(g.evidence || []).length})</span></span>
+      </div>
+      ${(g.evidence || []).length === 0
+        ? '<div class="ev-empty">لم تُرفع أدلّة بعد — أضف روابط لشهادات المعامل، صور العيّنات، فواتير المصنع…</div>'
+        : '<div class="evidence-list">' + evidenceItems + '</div>'}
+      <button class="add-evidence-btn" onclick="addEvidence(${g.id})">+ إضافة دليل (رابط)</button>
+    </div>`;
+
+    // Urgency badge in head (only for non-final statuses)
+    let headBadge = '';
+    if (urg && urg.kind !== 'on-time') {
+      headBadge = `<span class="badge-pill ${urg.kind}">${escapeHtml(urg.label)}</span>`;
+    }
+
+    // Variance line under actual date
+    let varianceHtml = '';
+    if (variance) {
+      varianceHtml = `<div class="variance ${variance.kind}">${escapeHtml(variance.label)}</div>`;
+    }
+
+    return `<div class="gate status-${g.status}${blocked ? ' blocked' : ''}${open ? ' open' : ''}" id="gate-${g.id}">
+      <div class="gate-head" onclick="toggleGate(${g.id})">
+        <div class="gate-badge">${g.id}</div>
+        <div class="gate-title-block">
+          <div class="gate-title">${escapeHtml(g.name)}</div>
+          <div class="gate-desc">${escapeHtml(g.desc)}</div>
+        </div>
+        <div class="gate-badge-row">
+          ${headBadge}
+          <div class="gate-status-pill">${STATUS_LABEL[g.status]}</div>
+        </div>
+        <div class="chev">▼</div>
+      </div>
+      <div class="gate-body">
+        <div class="gate-body-inner">
+          ${blocked ? `<div class="blocked-notice">هذه البوابة <strong>مُقفلة</strong> — يجب اعتماد البوابة ${g.id - 1} أولاً.</div>` : ''}
+          <div class="field-grid">
+            <div class="field">
+              <label>الحالة</label>
+              <select onchange="updateGateField(${g.id}, 'status', this.value)" ${blocked ? 'disabled' : ''}>
+                ${STATUS_OPTIONS.map(s => `<option value="${s.value}"${g.status === s.value ? ' selected' : ''}>${s.label}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field">
+              <label>المسؤول</label>
+              <input type="text" placeholder="اسم المسؤول" value="${escapeHtml(g.owner)}" onchange="updateGateField(${g.id}, 'owner', this.value)">
+            </div>
+            <div class="field">
+              <label>التاريخ المستهدف</label>
+              <input type="date" value="${escapeHtml(g.targetDate)}" onchange="updateGateField(${g.id}, 'targetDate', this.value)">
+            </div>
+            <div class="field">
+              <label>تاريخ الإنجاز الفعلي</label>
+              <input type="date" value="${escapeHtml(g.actualDate)}" onchange="updateGateField(${g.id}, 'actualDate', this.value)">
+              ${varianceHtml}
+            </div>
+            <div class="field wide">
+              <label>ملاحظات وقرارات</label>
+              <textarea rows="3" placeholder="رقم العيّنة المعتمد، شهادة المعمل، اسم المفتّش، أي تفاصيل توثيقية..." onchange="updateGateField(${g.id}, 'notes', this.value)">${escapeHtml(g.notes)}</textarea>
+            </div>
+          </div>
+
+          <div class="checklist-title">قائمة التحقق <span style="font-weight:400;">(${g.checklist.filter(c => c.done).length}/${g.checklist.length})</span></div>
+          <div class="completion-row">
+            <div class="mini-progress"><div class="mini-fill" style="width:${completion}%"></div></div>
+            <span><span class="num">${completion}</span>% مكتمل</span>
+          </div>
+          <div class="checklist">${checklistHtml}</div>
+
+          ${evidenceHtml}
+
+          <div class="log-section">
+            <div class="log-title">سجل التغييرات</div>
+            ${logHtml}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+// ============ Actions ============
+window.scrollToGate = function(id) {
+  if (openGateId !== id) {
+    openGateId = id;
+    renderAll();
+  }
+  setTimeout(() => {
+    const el = document.getElementById('gate-' + id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
+};
+
+window.toggleGate = function(id) {
+  openGateId = (openGateId === id) ? null : id;
+  renderAll();
+};
+
+window.toggleCheck = async function(gateId, idx) {
+  const p = currentProject();
+  if (!p) return;
+  const g = p.gates.find(x => x.id === gateId);
+  if (!g) return;
+  if (!isGateUnlocked(p.gates, gateId)) return;
+  const item = g.checklist.find(c => c.idx === idx);
+  if (!item) return;
+  item.done = !item.done;
+  addLog(g, (item.done ? 'تم اختيار: ' : 'إلغاء: ') + item.text);
+  await persistProject(p);
+  renderAll();
+};
+
+window.updateGateField = async function(gateId, field, value) {
+  const p = currentProject();
+  if (!p) return;
+  const g = p.gates.find(x => x.id === gateId);
+  if (!g) return;
+
+  if (field === 'status') {
+    if (g.status === value) return; // no-op
+    // Validate forward transitions
+    if (value === 'approved') {
+      const pct = gateCompletionPct(g);
+      if (pct < 100) {
+        const ok = await confirmModal(
+          'اعتماد رغم نقص قائمة التحقق',
+          'قائمة التحقق غير مكتملة (' + pct + '%). هل تريد الاعتماد رغم ذلك؟ سيُسجّل هذا في الـ log.'
+        );
+        if (!ok) { renderAll(); return; }
+      }
+    }
+    const oldStatus = g.status;
+    g.status = value;
+    addLog(g, 'تغيير الحالة: ' + STATUS_LABEL[oldStatus] + ' → ' + STATUS_LABEL[value]);
+    if (value === 'approved' && !g.actualDate) {
+      g.actualDate = new Date().toISOString().slice(0, 10);
+    } else if (oldStatus === 'approved' && value !== 'approved' && g.actualDate) {
+      // التراجع عن الاعتماد — نمسح تاريخ الإنجاز لأنّ البوابة لم تعد مكتملة.
+      g.actualDate = '';
+      addLog(g, 'مسح تاريخ الإنجاز (التراجع عن الاعتماد)');
+    }
+  } else {
+    // لا تُسجّل تغييراً إن لم تتغيّر القيمة فعلاً — منع تلوّث السجل.
+    if ((g[field] || '') === (value || '')) return;
+    g[field] = value;
+    if (field === 'notes') {
+      addLog(g, value ? 'تحديث الملاحظات' : 'مسح الملاحظات');
+    } else if (field === 'owner') {
+      addLog(g, value ? 'تحديث المسؤول: ' + value : 'مسح المسؤول');
+    } else if (field === 'targetDate') {
+      addLog(g, value ? 'تحديث التاريخ المستهدف: ' + value : 'مسح التاريخ المستهدف');
+    } else if (field === 'actualDate') {
+      addLog(g, value ? 'تحديث تاريخ الإنجاز: ' + value : 'مسح تاريخ الإنجاز');
+    }
+  }
+  await persistProject(p);
+  renderAll();
+};
+
+// ============ Modal: promisified, supports input or confirm-only ============
+let _modalCleanup = null;
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  if (_modalCleanup) { _modalCleanup(); _modalCleanup = null; }
+}
+
+// مودال موحّد: يُرجع Promise. إن showInput=false يعمل كـ confirm.
+function openModal({ title, message, showInput = true, placeholder = '', defaultValue = '', okText = 'تأكيد', cancelText = 'إلغاء' }) {
+  return new Promise(resolve => {
+    const modal = document.getElementById('modal');
+    const titleEl = document.getElementById('modal-title');
+    const msgEl = document.getElementById('modal-message');
+    const inputWrap = document.getElementById('modal-input-wrap');
+    const input = document.getElementById('modal-input');
+    const okBtn = document.getElementById('modal-ok');
+    const cancelBtn = document.getElementById('modal-cancel');
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    inputWrap.style.display = showInput ? '' : 'none';
+    if (showInput) {
+      input.placeholder = placeholder;
+      input.value = defaultValue;
+    }
+    okBtn.textContent = okText;
+    cancelBtn.textContent = cancelText;
+
+    modal.classList.add('show');
+    if (showInput) setTimeout(() => input.focus(), 30);
+    else setTimeout(() => okBtn.focus(), 30);
+
+    const onOk = () => {
+      const value = showInput ? input.value.trim() : true;
+      cleanup();
+      resolve(value);
+    };
+    const onCancel = () => {
+      cleanup();
+      resolve(showInput ? null : false);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') onCancel();
+      else if (e.key === 'Enter' && (!showInput || document.activeElement === input)) onOk();
+    };
+    function cleanup() {
+      modal.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      document.removeEventListener('keydown', onKey);
+      _modalCleanup = null;
+    }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    document.addEventListener('keydown', onKey);
+    _modalCleanup = cleanup;
+  });
+}
+
+function confirmModal(title, message, okText = 'تأكيد') {
+  return openModal({ title, message, showInput: false, okText });
+}
+function promptModal(title, message, placeholder = '', defaultValue = '', okText = 'حفظ') {
+  return openModal({ title, message, showInput: true, placeholder, defaultValue, okText });
+}
+
+// شاش مودال بنبرة تنبيه (OK فقط).
+function alertModal(title, message) {
+  return openModal({ title, message, showInput: false, okText: 'تمام', cancelText: 'إغلاق' });
+}
+
+document.getElementById('modal-cancel').addEventListener('click', () => closeModal());
+
+document.getElementById('project-select').addEventListener('change', async (e) => {
+  currentProjectId = e.target.value;
+  openGateId = null;
+  await persistCurrent();
+  renderAll();
+});
+
+document.getElementById('new-project-btn').addEventListener('click', async () => {
+  const name = await promptModal(
+    'مشروع جديد',
+    'سيتم إنشاء مشروع بست بوابات فارغة. اختر اسماً واضحاً يصف SKU أو الإصدار.',
+    'مثال: SKU 4 — هدية العقيقة',
+    '',
+    'إنشاء'
+  );
+  if (!name) return;
+  const p = newProject(name);
+  projects.unshift(p);
+  currentProjectId = p.id;
+  openGateId = null;
+  await persistProject(p);
+  await persistCurrent();
+  renderProjectSwitcher();
+  renderAll();
+});
+
+document.getElementById('rename-project-btn').addEventListener('click', async () => {
+  const p = currentProject();
+  if (!p) return;
+  const name = await promptModal(
+    'إعادة تسمية المشروع',
+    'الاسم الحالي: ' + p.name,
+    'اسم جديد',
+    p.name,
+    'تحديث'
+  );
+  if (!name) return;
+  p.name = name;
+  await persistProject(p);
+  renderProjectSwitcher();
+  renderAll();
+});
+
+document.getElementById('duplicate-project-btn').addEventListener('click', async () => {
+  const p = currentProject();
+  if (!p) return;
+  const name = await promptModal(
+    'نسخ المشروع',
+    'سيتم نسخ المشروع الحالي مع تفريغ الحالات والـ logs (يبقى التمبليت كما هو).',
+    'اسم النسخة',
+    p.name + ' — نسخة',
+    'نسخ'
+  );
+  if (!name) return;
+  // نسخة جديدة بنفس التمبليت (لا ننسخ حالات البوابات أو السجل).
+  const clone = newProject(name);
+  projects.unshift(clone);
+  currentProjectId = clone.id;
+  openGateId = null;
+  await persistProject(clone);
+  await persistCurrent();
+  renderProjectSwitcher();
+  renderAll();
+});
+
+document.getElementById('delete-project-btn').addEventListener('click', async () => {
+  const p = currentProject();
+  if (!p) return;
+  const ok = await confirmModal(
+    'حذف المشروع',
+    'سيتم حذف المشروع "' + p.name + '" وكل بياناته نهائياً. متابعة؟',
+    'حذف'
+  );
+  if (!ok) return;
+  await removeProject(p.id);
+  projects = projects.filter(x => x.id !== p.id);
+  if (projects.length === 0) {
+    const seed = newProject('مشروع جديد');
+    projects.push(seed);
+    await persistProject(seed);
+  }
+  currentProjectId = projects[0].id;
+  openGateId = null;
+  await persistCurrent();
+  renderProjectSwitcher();
+  renderAll();
+});
+
+// ============ Export / Import / Print ============
+function download(filename, content, mime = 'text/plain;charset=utf-8') {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('export-json-btn').addEventListener('click', () => {
+  const p = currentProject();
+  if (!p) return;
+  const safeName = (p.name || 'project').replace(/[^\p{L}\p{N}_-]+/gu, '_').slice(0, 60);
+  download(
+    'malmas_gates_' + safeName + '_' + new Date().toISOString().slice(0, 10) + '.json',
+    JSON.stringify(p, null, 2),
+    'application/json;charset=utf-8'
+  );
+});
+
+document.getElementById('export-csv-btn').addEventListener('click', () => {
+  if (projects.length === 0) { alertModal('لا توجد بيانات', 'لا توجد مشاريع للتصدير.'); return; }
+  const headers = ['Project','Gate ID','Gate Name','Status','Owner','Target Date','Actual Date','Variance Days','Checklist Done','Checklist Total','Evidence Count','Notes'];
+  const rows = [];
+  for (const p of projects) {
+    for (const g of (p.gates || [])) {
+      const done = g.checklist.filter(c => c.done).length;
+      const total = g.checklist.length;
+      let varDays = '';
+      if (g.targetDate && g.actualDate) {
+        const t = new Date(g.targetDate + 'T00:00:00');
+        const a = new Date(g.actualDate + 'T00:00:00');
+        if (!isNaN(t) && !isNaN(a)) varDays = Math.round((a - t) / (86400000));
+      }
+      rows.push([
+        p.name, g.id, g.name, STATUS_LABEL[g.status] || g.status,
+        g.owner || '', g.targetDate || '', g.actualDate || '',
+        varDays, done, total, (g.evidence || []).length, (g.notes || '').replace(/\n/g, ' ')
+      ].map(val => {
+        const s = String(val ?? '');
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }).join(','));
+    }
+  }
+  const csv = '﻿' + [headers.join(','), ...rows].join('\n');
+  download('malmas_gates_all_' + new Date().toISOString().slice(0, 10) + '.csv', csv, 'text/csv;charset=utf-8');
+});
+
+document.getElementById('import-json-btn').addEventListener('click', () => {
+  document.getElementById('import-file').click();
+});
+
+document.getElementById('import-file').addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  let imported;
+  try {
+    const text = await file.text();
+    imported = JSON.parse(text);
+  } catch (err) {
+    await alertModal('فشل القراءة', 'الملف ليس JSON صالحاً.');
+    e.target.value = '';
+    return;
+  }
+  // ندعم: مشروع واحد، أو مصفوفة مشاريع.
+  const list = Array.isArray(imported) ? imported : [imported];
+  let added = 0;
+  for (const raw of list) {
+    if (!raw || !raw.gates || !raw.name) continue;
+    const p = migrateProject({
+      id: 'pj_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      name: raw.name + ' (مستورد)',
+      gates: raw.gates,
+      createdAt: raw.createdAt || Date.now(),
+      updatedAt: Date.now()
+    });
+    projects.unshift(p);
+    await persistProject(p);
+    added++;
+  }
+  e.target.value = '';
+  if (added === 0) {
+    await alertModal('لا يوجد ما يُستورد', 'لم يتمكّن النظام من تعريف أي مشروع في الملف.');
+    return;
+  }
+  currentProjectId = projects[0].id;
+  await persistCurrent();
+  renderProjectSwitcher();
+  renderAll();
+  await alertModal('تم الاستيراد', 'تمّ إضافة ' + added + ' مشروع/مشاريع.');
+});
+
+document.getElementById('print-btn').addEventListener('click', () => {
+  // افتح كل البوابات قبل الطباعة حتى يطبع المحتوى كاملاً.
+  const p = currentProject();
+  if (!p) return;
+  const wasOpenId = openGateId;
+  openGateId = 'all';
+  renderAll();
+  setTimeout(() => {
+    window.print();
+    openGateId = wasOpenId;
+    renderAll();
+  }, 200);
+});
+
+// ============ Evidence handlers (global, called from rendered HTML) ============
+window.addEvidence = async function(gateId) {
+  const p = currentProject();
+  if (!p) return;
+  const g = p.gates.find(x => x.id === gateId);
+  if (!g) return;
+  g.evidence.push({ label: '', url: '' });
+  await persistProject(p);
+  renderAll();
+};
+window.updateEvidence = async function(gateId, idx, field, value) {
+  const p = currentProject();
+  if (!p) return;
+  const g = p.gates.find(x => x.id === gateId);
+  if (!g || !g.evidence[idx]) return;
+  if ((g.evidence[idx][field] || '') === (value || '')) return;
+  g.evidence[idx][field] = value;
+  addLog(g, 'تحديث دليل: ' + (g.evidence[idx].label || field));
+  await persistProject(p);
+  // لا نُعيد render لأنّ المستخدم يكتب — يكفي الحفظ.
+};
+window.removeEvidence = async function(gateId, idx) {
+  const p = currentProject();
+  if (!p) return;
+  const g = p.gates.find(x => x.id === gateId);
+  if (!g || !g.evidence[idx]) return;
+  const removed = g.evidence[idx];
+  g.evidence.splice(idx, 1);
+  addLog(g, 'إزالة دليل: ' + (removed.label || removed.url || '—'));
+  await persistProject(p);
+  renderAll();
+};
+
+// Init
+loadAll();
+</script>
+</body>
+</html>

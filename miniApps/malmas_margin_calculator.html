@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَلْمَس · حاسبة الهامش الحقيقي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --surface: #FFFFFF;
+    --navy: #1E2A44;
+    --navy-deep: #14203A;
+    --gold: #C9A961;
+    --gold-soft: #E5D5A8;
+    --gold-deep: #A88841;
+    --sage: #8B9A7E;
+    --sage-soft: #C8D2BC;
+    --rose: #C97B7B;
+    --rose-soft: #E8C5C5;
+    --coral: #D89177;
+    --muted: #6B6F7A;
+    --ink: #2A2E36;
+    --border: #E8E2D5;
+    --border-soft: #F0EBE0;
+    --shade: #F5F1E8;
+    --good: #3B6D11;
+    --good-bg: #E8F0E2;
+    --warn: #854F0B;
+    --warn-bg: #FAEEDA;
+    --bad: #791F1F;
+    --bad-bg: #FCEBEB;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); color: var(--ink); font-family: 'Tajawal', system-ui, sans-serif; font-size: 15px; line-height: 1.6; }
+  .num { font-family: 'Inter', sans-serif; font-feature-settings: "tnum" 1; direction: ltr; unicode-bidi: isolate; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  /* Header */
+  header { display: flex; flex-direction: column; gap: 8px; padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .wordmark { font-family: 'Amiri', serif; font-size: 38px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+  .divider { color: var(--gold); font-size: 22px; }
+  .page-title { font-size: 18px; font-weight: 500; color: var(--ink); }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .tag { display: inline-block; background: var(--shade); color: var(--navy); font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 4px; margin-inline-start: 8px; }
+
+  /* Preset bar */
+  .preset-bar { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .preset-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .preset-label { font-size: 13px; color: var(--muted); font-weight: 500; min-width: 80px; }
+  .pill { font-family: inherit; font-size: 13px; padding: 7px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--ink); cursor: pointer; transition: all 0.15s; font-weight: 500; }
+  .pill:hover { border-color: var(--gold); background: var(--shade); }
+  .pill.active { background: var(--navy); color: var(--surface); border-color: var(--navy); }
+
+  /* Main grid */
+  .main-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 20px; margin-bottom: 28px; }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; }
+  .panel-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; gap: 8px; }
+  .panel-title .icon { color: var(--gold); }
+
+  .field { display: grid; grid-template-columns: 1fr 130px; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px dashed var(--border-soft); }
+  .field:last-child { border-bottom: none; }
+  .field label { font-size: 14px; color: var(--ink); }
+  .field .hint { font-size: 11px; color: var(--muted); display: block; margin-top: 2px; }
+  .field input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 14px; background: var(--surface); color: var(--ink); text-align: end; }
+  .field input.num { font-family: 'Inter', sans-serif; }
+  .field input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15); }
+  .input-group { position: relative; }
+  .input-suffix { position: absolute; inset-inline-start: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); pointer-events: none; font-family: 'Tajawal', sans-serif; }
+
+  /* Results */
+  .result-headline { background: var(--shade); border-radius: 8px; padding: 18px 20px; margin-bottom: 18px; }
+  .result-headline.good { background: var(--good-bg); }
+  .result-headline.warn { background: var(--warn-bg); }
+  .result-headline.bad { background: var(--bad-bg); }
+  .headline-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .headline-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .headline-value { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; color: var(--navy); }
+  .result-headline.good .headline-value { color: var(--good); }
+  .result-headline.warn .headline-value { color: var(--warn); }
+  .result-headline.bad .headline-value { color: var(--bad); }
+  .headline-unit { font-size: 14px; color: var(--muted); margin-inline-start: 4px; }
+  .headline-sub { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08); font-size: 13px; color: var(--muted); }
+  .badge { font-size: 12px; padding: 4px 10px; border-radius: 4px; font-weight: 500; background: var(--surface); color: var(--navy); }
+
+  .stat-row { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px dashed var(--border-soft); font-size: 14px; }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row .lbl { color: var(--ink); }
+  .stat-row .val { font-weight: 600; color: var(--navy); }
+  .stat-row.cost .val { color: var(--rose); }
+  .stat-row.cost .val::before { content: '−'; margin-inline-end: 2px; }
+  .stat-row.profit { background: var(--shade); margin: 8px -10px 0; padding: 12px 10px; border-radius: 6px; border: none; }
+  .stat-row.profit .lbl { font-weight: 700; color: var(--navy); }
+  .stat-row.profit .val { font-size: 16px; font-weight: 700; color: var(--gold-deep); }
+  .stat-row.profit .val::before { content: ''; }
+
+  /* Waterfall */
+  .waterfall { margin-top: 22px; }
+  .waterfall-title { font-size: 13px; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+  .stack-bar { display: flex; width: 100%; height: 36px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+  .stack-seg { display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; color: white; overflow: hidden; white-space: nowrap; min-width: 0; }
+  .stack-seg[data-tiny="1"] span { display: none; }
+  .stack-legend { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 16px; margin-top: 12px; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .legend-item .lbl { color: var(--ink); flex: 1; }
+  .legend-item .val { color: var(--muted); font-family: 'Inter', sans-serif; font-feature-settings: "tnum" 1; }
+
+  /* Scenarios */
+  .scenarios-section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; }
+  .scenarios-toolbar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+  .scenarios-toolbar input { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 14px; }
+  .scenarios-toolbar input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15); }
+  .btn { font-family: inherit; font-size: 14px; font-weight: 500; padding: 9px 18px; border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+  .btn-primary { background: var(--navy); color: var(--surface); border-color: var(--navy); }
+  .btn-primary:hover { background: var(--navy-deep); }
+  .btn-ghost { background: transparent; color: var(--navy); border-color: var(--border); }
+  .btn-ghost:hover { background: var(--shade); border-color: var(--gold); }
+  .btn-icon { background: transparent; border: none; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 14px; }
+  .btn-icon:hover { background: var(--shade); color: var(--navy); }
+  .btn-icon.danger:hover { background: var(--bad-bg); color: var(--bad); }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--shade); }
+  th { text-align: start; padding: 12px 12px; font-size: 12px; font-weight: 700; color: var(--navy); border-bottom: 1px solid var(--border); }
+  td { padding: 12px 12px; border-bottom: 1px solid var(--border-soft); font-size: 13px; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--shade); }
+  .empty-scenarios { text-align: center; padding: 32px 16px; color: var(--muted); font-size: 14px; }
+
+  .note-box { background: var(--shade); border-inline-start: 3px solid var(--gold); padding: 12px 16px; margin-top: 16px; border-radius: 4px; font-size: 13px; color: var(--ink); }
+  .note-box strong { color: var(--navy); }
+
+  /* Footer */
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 13px; }
+  footer .quote { font-family: 'Amiri', serif; font-size: 15px; color: var(--gold); }
+
+  @media (max-width: 880px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .field { grid-template-columns: 1fr 110px; }
+    .wrap { padding: 20px 16px 60px; }
+    .wordmark { font-size: 30px; }
+    .stack-legend { grid-template-columns: 1fr; }
+    th, td { padding: 8px; font-size: 12px; }
+    .scenarios-section { overflow-x: auto; }
+  }
+
+  /* === Added: insights row, toast, modal, print === */
+  .insights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+  @media (max-width: 880px) { .insights-grid { grid-template-columns: 1fr; } }
+
+  .mini-table { width: 100%; border-collapse: collapse; }
+  .mini-table th, .mini-table td { padding: 9px 10px; font-size: 13px; border-bottom: 1px dashed var(--border-soft); }
+  .mini-table thead th { background: var(--shade); font-size: 11px; font-weight: 700; color: var(--navy); border-bottom: 1px solid var(--border); }
+  .mini-table tbody tr:last-child td { border-bottom: none; }
+  .mini-table .pos { color: var(--good); font-weight: 600; }
+  .mini-table .neg { color: var(--bad); font-weight: 600; }
+  .mini-table .neutral { color: var(--muted); }
+  .mini-table .target { color: var(--gold-deep); font-weight: 600; }
+
+  .projection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+  .projection-card { background: var(--shade); border-radius: 6px; padding: 14px 16px; }
+  .projection-card .pc-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+  .projection-card .pc-value { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+  .projection-card .pc-unit { font-size: 12px; color: var(--muted); margin-inline-start: 4px; font-family: 'Tajawal', sans-serif; }
+  .projection-card.profit { background: var(--good-bg); }
+  .projection-card.profit .pc-value { color: var(--good); }
+  .projection-card.loss { background: var(--bad-bg); }
+  .projection-card.loss .pc-value { color: var(--bad); }
+
+  .volume-field { display: grid; grid-template-columns: 1fr 130px; align-items: center; gap: 12px; padding: 10px 0; }
+  .volume-field label { font-size: 14px; color: var(--ink); }
+  .volume-field input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 14px; text-align: end; }
+  .volume-field input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15); }
+  .volume-field .hint { font-size: 11px; color: var(--muted); display: block; margin-top: 2px; }
+
+  /* Stack bar with loss indicator */
+  .stack-bar.with-loss { border-color: var(--rose); position: relative; }
+  .loss-banner { font-size: 12px; color: var(--bad); font-weight: 600; margin-bottom: 6px; }
+
+  /* Toolbar */
+  .scenarios-toolbar .toolbar-spacer { flex: 1; }
+  .toolbar-btn {
+    font-family: inherit; font-size: 13px; padding: 8px 12px;
+    border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--navy); font-weight: 500;
+  }
+  .toolbar-btn:hover { border-color: var(--gold); background: var(--shade); }
+  .hidden-input { display: none; }
+
+  /* Toast (non-blocking feedback) */
+  .toast-wrap { position: fixed; top: 24px; inset-inline-end: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .toast {
+    background: var(--navy); color: var(--surface);
+    padding: 12px 18px; border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(20, 32, 58, 0.25);
+    font-size: 14px; font-weight: 500;
+    animation: toast-in 0.2s ease-out;
+    pointer-events: auto;
+    border-inline-start: 3px solid var(--gold);
+    max-width: 360px;
+  }
+  .toast.success { border-inline-start-color: var(--good); }
+  .toast.error { background: var(--bad); border-inline-start-color: var(--rose-soft); }
+  @keyframes toast-in { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* Confirm modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20, 32, 58, 0.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--surface); border-radius: 12px; padding: 28px; max-width: 460px; width: 100%; }
+  .modal h3 { font-family: 'Amiri', serif; font-size: 22px; color: var(--navy); margin-bottom: 8px; }
+  .modal p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+  /* Scenario compare highlights */
+  .scenarios-rows tr.checked { background: var(--shade); }
+  td.row-check { width: 40px; text-align: center; }
+
+  /* Compare panel */
+  .compare-panel { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; margin-bottom: 28px; }
+  .compare-panel.show { display: block; }
+  .compare-table { width: 100%; border-collapse: collapse; }
+  .compare-table th, .compare-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px dashed var(--border-soft); }
+  .compare-table th { text-align: start; background: var(--shade); font-weight: 700; color: var(--navy); }
+  .compare-table .row-label { color: var(--muted); font-weight: 500; }
+  .compare-table .row-good { color: var(--good); font-weight: 600; }
+  .compare-table .row-bad  { color: var(--bad);  font-weight: 600; }
+  .compare-close { float: inline-end; cursor: pointer; color: var(--muted); background: transparent; border: 0; font-size: 16px; }
+
+  /* Print */
+  @media print {
+    body { background: white; }
+    .preset-bar, .scenarios-toolbar, .modal-overlay, .toast-wrap, footer { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; }
+    .panel, .scenarios-section, .compare-panel, .insights-card { box-shadow: none !important; border: 1px solid #999 !important; page-break-inside: avoid; }
+    .result-headline { border: 1px solid #999; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <span class="wordmark">مَلْمَس</span>
+      <span class="divider">◆</span>
+      <span class="page-title">حاسبة الهامش الحقيقي</span>
+      <span class="tag">Net Margin · VAT · CAC</span>
+    </div>
+    <p class="subtitle">الهامش الإجمالي يخدع — هذه الحاسبة تكشف ما يتبقّى فعلاً بعد كل تكلفة.</p>
+  </header>
+
+  <section class="preset-bar">
+    <div class="preset-row">
+      <span class="preset-label">المنتج:</span>
+      <button class="pill" data-sku="sku1">SKU 1 · منظم العربة</button>
+      <button class="pill" data-sku="sku2">SKU 2 · وسادة الرضاعة</button>
+      <button class="pill" data-sku="sku3">SKU 3 · سجادة الحروف</button>
+      <button class="pill" data-sku="sku4">SKU 4 · هدية العقيقة</button>
+      <button class="pill" data-sku="sku5">SKU 5 · حقيبة الحفاضات</button>
+      <button class="pill" data-sku="sku6">SKU 6 · مصباح</button>
+      <button class="pill" data-sku="sku7">SKU 7 · طقم سيليكون</button>
+      <button class="pill" data-sku="sku8">SKU 8 · الدُمى</button>
+    </div>
+    <div class="preset-row">
+      <span class="preset-label">المنصة:</span>
+      <button class="pill" data-platform="noon">Noon (13%)</button>
+      <button class="pill" data-platform="amazon">Amazon (15%)</button>
+      <button class="pill" data-platform="salla">Salla (0%)</button>
+    </div>
+  </section>
+
+  <div class="main-grid">
+
+    <section class="panel">
+      <div class="panel-title"><span class="icon">◆</span> المُدخلات</div>
+
+      <div class="field">
+        <label>سعر البيع (شامل VAT) <span class="hint">سعر العرض على المنصة</span></label>
+        <input id="i-price" type="number" min="0" step="0.01" class="num" value="119">
+      </div>
+
+      <div class="field">
+        <label>التكلفة المُستوردة الكاملة <span class="hint">المورد + شحن + جمارك + VAT الاستيراد</span></label>
+        <input id="i-landed" type="number" min="0" step="0.01" class="num" value="49">
+      </div>
+
+      <div class="field">
+        <label>عمولة المنصة <span class="hint">% من سعر البيع</span></label>
+        <input id="i-commission" type="number" min="0" max="100" step="0.1" class="num" value="13">
+      </div>
+
+      <div class="field">
+        <label>ضريبة القيمة المضافة <span class="hint">15% في السعودية — تُحسب على هامش القيمة المضافة</span></label>
+        <input id="i-vat" type="number" min="0" max="100" step="0.1" class="num" value="15">
+      </div>
+
+      <div class="field">
+        <label>رسوم 3PL <span class="hint">ر.س لكل طلب — التخزين والتغليف والشحن للعميل</span></label>
+        <input id="i-3pl" type="number" min="0" step="0.01" class="num" value="12">
+      </div>
+
+      <div class="field">
+        <label>تكلفة اكتساب العميل (CAC) <span class="hint">ر.س لكل طلب — الإعلانات والمؤثرات</span></label>
+        <input id="i-cac" type="number" min="0" step="0.01" class="num" value="25">
+      </div>
+
+      <div class="field">
+        <label>مخصص الإرجاع <span class="hint">% — مخصص لخسارة المنتجات المُرجعة</span></label>
+        <input id="i-returns" type="number" min="0" max="100" step="0.1" class="num" value="7">
+      </div>
+
+      <div class="field">
+        <label>رسوم الدفع الإلكتروني <span class="hint">% — بوابات الدفع (Mada، Apple Pay، فيزا)</span></label>
+        <input id="i-payment" type="number" min="0" max="100" step="0.1" class="num" value="2">
+      </div>
+
+      <div class="volume-field" style="border-top: 1px solid var(--border-soft); margin-top: 6px; padding-top: 14px;">
+        <label>الحجم الشهري المتوقّع <span class="hint">طلب / شهر — لحساب الربح الشهري والسنوي</span></label>
+        <input id="i-volume" type="number" min="0" step="1" value="100">
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title"><span class="icon">◆</span> النتائج</div>
+
+      <div class="result-headline" id="headline">
+        <div class="headline-row">
+          <span class="headline-label">صافي الربح لكل وحدة</span>
+          <span class="badge" id="margin-badge">—</span>
+        </div>
+        <div style="margin-top:6px;">
+          <span class="headline-value"><span class="num" id="net-profit">—</span></span>
+          <span class="headline-unit">ر.س</span>
+        </div>
+        <div class="headline-sub">
+          <span>الهامش الصافي: <strong class="num" id="net-margin">—</strong>%</span>
+          <span>الهامش الإجمالي: <strong class="num" id="gross-margin">—</strong>%</span>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <span class="lbl">سعر البيع (شامل VAT)</span>
+        <span class="val"><span class="num" id="r-price">—</span> ر.س</span>
+      </div>
+      <div class="stat-row cost">
+        <span class="lbl">التكلفة المُستوردة</span>
+        <span class="val"><span class="num" id="r-landed">—</span> ر.س</span>
+      </div>
+      <div class="stat-row cost">
+        <span class="lbl">عمولة المنصة</span>
+        <span class="val"><span class="num" id="r-commission">—</span> ر.س</span>
+      </div>
+      <div class="stat-row cost">
+        <span class="lbl">VAT المُرسَّلة لـ ZATCA <span style="font-size:11px; color:var(--muted);">(على القيمة المضافة)</span></span>
+        <span class="val"><span class="num" id="r-vat">—</span> ر.س</span>
+      </div>
+      <div class="stat-row cost">
+        <span class="lbl">3PL (تشغيل اللوجستيات)</span>
+        <span class="val"><span class="num" id="r-3pl">—</span> ر.س</span>
+      </div>
+      <div class="stat-row cost">
+        <span class="lbl">CAC (اكتساب العميل)</span>
+        <span class="val"><span class="num" id="r-cac">—</span> ر.س</span>
+      </div>
+      <div class="stat-row cost">
+        <span class="lbl">مخصص الإرجاع</span>
+        <span class="val"><span class="num" id="r-returns">—</span> ر.س</span>
+      </div>
+      <div class="stat-row cost">
+        <span class="lbl">رسوم الدفع</span>
+        <span class="val"><span class="num" id="r-payment">—</span> ر.س</span>
+      </div>
+      <div class="stat-row profit">
+        <span class="lbl">= صافي الربح للوحدة</span>
+        <span class="val"><span class="num" id="r-profit">—</span> ر.س</span>
+      </div>
+
+      <div class="waterfall">
+        <div class="waterfall-title">إلى أين يذهب كل ريال من سعر البيع؟</div>
+        <div id="loss-banner" class="loss-banner" style="display:none;">⚠ المنتج يخسر بالسعر الحالي — التكاليف تتجاوز السعر.</div>
+        <div class="stack-bar" id="stack-bar"></div>
+        <div class="stack-legend" id="stack-legend"></div>
+      </div>
+
+      <div class="waterfall" style="margin-top: 22px;">
+        <div class="waterfall-title">الإسقاط الشهري والسنوي</div>
+        <div class="projection-grid" id="projection-grid"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Insights row -->
+  <div class="insights-grid">
+    <section class="panel">
+      <div class="panel-title"><span class="icon">◆</span> نقاط التعادل</div>
+      <table class="mini-table" id="breakeven-table">
+        <thead>
+          <tr>
+            <th>الهدف</th>
+            <th>السعر الأدنى</th>
+            <th>الفرق عن الحالي</th>
+          </tr>
+        </thead>
+        <tbody id="breakeven-rows"></tbody>
+      </table>
+      <p style="font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6;">
+        السعر الأدنى الذي يحقّق كل هدف هامش، مع تثبيت بقيّة التكاليف. مفيد لأرضيّة العروض الترويجية.
+      </p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title"><span class="icon">◆</span> اختبار الحساسية</div>
+      <table class="mini-table" id="sensitivity-table">
+        <thead>
+          <tr>
+            <th>التغيير</th>
+            <th>−20%</th>
+            <th>−10%</th>
+            <th>الحالي</th>
+            <th>+10%</th>
+            <th>+20%</th>
+          </tr>
+        </thead>
+        <tbody id="sensitivity-rows"></tbody>
+      </table>
+      <p style="font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6;">
+        أثر التغيّر على <strong>صافي الربح للوحدة (ر.س)</strong>. اكتشف أين يهتزّ هامشك بسرعة.
+      </p>
+    </section>
+  </div>
+
+  <!-- Compare panel (hidden until "قارن المُحدّدة") -->
+  <section class="compare-panel" id="compare-panel">
+    <button class="compare-close" id="compare-close" type="button" title="إغلاق">×</button>
+    <div class="panel-title"><span class="icon">◆</span> مقارنة سيناريوهات</div>
+    <div id="compare-body"></div>
+  </section>
+
+  <section class="scenarios-section">
+    <div class="panel-title"><span class="icon">◆</span> السيناريوهات المحفوظة</div>
+    <div class="scenarios-toolbar">
+      <input id="scenario-name" type="text" placeholder="اسم السيناريو — مثال: SKU 1 على Noon بسعر 119">
+      <button class="btn btn-primary" id="save-scenario">حفظ السيناريو الحالي</button>
+      <button class="toolbar-btn" id="compare-btn" title="قارن السيناريوهات المُحدّدة جنباً إلى جنب">⇆ قارن المُحدّدة</button>
+      <div class="toolbar-spacer"></div>
+      <button class="toolbar-btn" id="reset-btn" title="استرجاع المُدخلات الافتراضية">↺ افتراضي</button>
+      <button class="toolbar-btn" id="export-json-btn" title="تصدير JSON لكل السيناريوهات (نسخة احتياطية)">⇣ JSON</button>
+      <button class="toolbar-btn" id="export-scenarios" title="تصدير CSV لمقارنة في Excel">⇣ CSV</button>
+      <button class="toolbar-btn" id="import-json-btn" title="استيراد JSON">⇡ استيراد</button>
+      <input type="file" id="import-file" class="hidden-input" accept="application/json,.json">
+      <button class="toolbar-btn" id="print-btn" title="طباعة / PDF">🖨 طباعة</button>
+    </div>
+    <div id="scenarios-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="row-check"><input type="checkbox" id="check-all" title="تحديد الكل"></th>
+            <th>السيناريو</th>
+            <th>السعر</th>
+            <th>التكلفة</th>
+            <th>عمولة</th>
+            <th>صافي الربح</th>
+            <th>هامش صافي</th>
+            <th>هامش إجمالي</th>
+            <th>التاريخ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="scenarios-rows"></tbody>
+      </table>
+      <div class="empty-scenarios" id="empty-scenarios">احفظ سيناريو لمقارنة التسعيرات المختلفة لاحقاً.</div>
+    </div>
+
+    <div class="note-box">
+      <strong>ملاحظة على VAT:</strong> ZATCA تتقاضى 15% فقط على <em>القيمة المضافة</em> (الفرق بين سعر البيع والتكلفة المستوردة)، لأن VAT المدفوعة عند الاستيراد قابلة للاسترداد. هذه الحاسبة تطبّق نموذج VAT الصافي تلقائياً. عتبات التقييم: <strong style="color:var(--good);">صافي ≥ 25% جيد</strong> · <strong style="color:var(--warn);">15-25% مقبول</strong> · <strong style="color:var(--bad);">أقل من 15% إعادة تسعير</strong>.
+    </div>
+  </section>
+
+  <footer>
+    <div class="quote">لأن كل لمسة تهم</div>
+    <div style="margin-top:6px;">مَلْمَس — الهامش الحقيقي يحمي القرارات الكبرى</div>
+  </footer>
+
+</div>
+
+<!-- Toast container (non-blocking feedback) -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <h3 id="confirm-title">—</h3>
+    <p id="confirm-message">—</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirm-cancel">إلغاء</button>
+      <button class="btn btn-primary" id="confirm-ok">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ============ Storage adapter (localStorage-backed) ============
+window.storage = (function () {
+  return {
+    async get(key) {
+      try { const v = localStorage.getItem(key); return v == null ? null : { value: v }; }
+      catch { return null; }
+    },
+    async set(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { console.error('storage.set failed', e); }
+    },
+    async delete(key) {
+      try { localStorage.removeItem(key); } catch { }
+    },
+    async list(prefix) {
+      const keys = [];
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(prefix)) keys.push(k);
+        }
+      } catch { }
+      return { keys };
+    }
+  };
+})();
+
+// ============ SKU Presets (from project data) ============
+const SKU_PRESETS = {
+  sku1: { name: 'SKU 1 — منظم العربة', price: 119, landed: 49 },
+  sku2: { name: 'SKU 2 — وسادة الرضاعة', price: 169, landed: 60 },
+  sku3: { name: 'SKU 3 — سجادة الحروف', price: 239, landed: 64 },
+  sku4: { name: 'SKU 4 — هدية العقيقة', price: 399, landed: 169 },
+  sku5: { name: 'SKU 5 — حقيبة الحفاضات', price: 219, landed: 73 },
+  sku6: { name: 'SKU 6 — مصباح + صوت', price: 129, landed: 45 },
+  sku7: { name: 'SKU 7 — طقم سيليكون', price: 99, landed: 35 },
+  sku8: { name: 'SKU 8 — الدُمى', price: 89, landed: 30 }
+};
+
+const PLATFORM_PRESETS = {
+  noon:   { commission: 13 },
+  amazon: { commission: 15 },
+  salla:  { commission: 0 }
+};
+
+// ============ State ============
+let scenarios = [];
+let currentSku = null;
+let currentPlatform = null;
+let selectedScenarioIds = new Set();
+
+// قيم المُدخلات الافتراضية — تُستخدم في زر "استرجاع الافتراضي".
+const DEFAULT_INPUTS = {
+  price: 119, landed: 49, commission: 13, vat: 15,
+  pl3: 12, cac: 25, returns: 7, payment: 2, volume: 100
+};
+
+// ============ Toast (non-blocking feedback) ============
+function toast(message, type = 'info', durationMs = 2600) {
+  const wrap = document.getElementById('toast-wrap');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'success' ? ' success' : type === 'error' ? ' error' : '');
+  el.textContent = message;
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.25s';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 280);
+  }, durationMs);
+}
+
+// ============ Confirm modal (promisified) ============
+function confirmModal(title, message, okText = 'تأكيد') {
+  return new Promise(resolve => {
+    const modal = document.getElementById('confirm-modal');
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
+    const okBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
+    okBtn.textContent = okText;
+    modal.classList.add('show');
+    setTimeout(() => okBtn.focus(), 30);
+
+    const onOk = () => { cleanup(); resolve(true); };
+    const onCancel = () => { cleanup(); resolve(false); };
+    const onKey = (e) => {
+      if (e.key === 'Escape') onCancel();
+      else if (e.key === 'Enter') onOk();
+    };
+    function cleanup() {
+      modal.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      document.removeEventListener('keydown', onKey);
+    }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    document.addEventListener('keydown', onKey);
+  });
+}
+
+// ============ Storage ============
+async function loadScenarios() {
+  try {
+    const list = await window.storage.list('margin:sc:');
+    if (list && list.keys) {
+      const items = await Promise.all(
+        list.keys.map(async k => {
+          try {
+            const r = await window.storage.get(k);
+            return r ? JSON.parse(r.value) : null;
+          } catch { return null; }
+        })
+      );
+      scenarios = items.filter(Boolean).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+    }
+  } catch (e) { scenarios = []; }
+  renderScenarios();
+}
+
+async function persistScenario(sc) {
+  try { await window.storage.set('margin:sc:' + sc.id, JSON.stringify(sc)); } catch (e) { }
+}
+
+async function removeScenario(id) {
+  try { await window.storage.delete('margin:sc:' + id); } catch (e) { }
+}
+
+// ============ Read inputs ============
+function getInputs() {
+  return {
+    price:      Number(document.getElementById('i-price').value) || 0,
+    landed:     Number(document.getElementById('i-landed').value) || 0,
+    commission: Number(document.getElementById('i-commission').value) || 0,
+    vat:        Number(document.getElementById('i-vat').value) || 0,
+    pl3:        Number(document.getElementById('i-3pl').value) || 0,
+    cac:        Number(document.getElementById('i-cac').value) || 0,
+    returns:    Number(document.getElementById('i-returns').value) || 0,
+    payment:    Number(document.getElementById('i-payment').value) || 0,
+    volume:     Number(document.getElementById('i-volume').value) || 0
+  };
+}
+
+function setInputs(values) {
+  if ('price'      in values) document.getElementById('i-price').value      = values.price;
+  if ('landed'     in values) document.getElementById('i-landed').value     = values.landed;
+  if ('commission' in values) document.getElementById('i-commission').value = values.commission;
+  if ('vat'        in values) document.getElementById('i-vat').value        = values.vat;
+  if ('pl3'        in values) document.getElementById('i-3pl').value        = values.pl3;
+  if ('cac'        in values) document.getElementById('i-cac').value        = values.cac;
+  if ('returns'    in values) document.getElementById('i-returns').value    = values.returns;
+  if ('payment'    in values) document.getElementById('i-payment').value    = values.payment;
+  if ('volume'     in values) document.getElementById('i-volume').value     = values.volume;
+}
+
+// ============ Compute ============
+function compute(i) {
+  // VAT on value added: tax applied to (price - landed) / (1 + vat%)
+  // This reflects that import VAT is recoverable; ZATCA receives net VAT on the margin.
+  const vatRate = i.vat / 100;
+  const valueAdded = Math.max(0, i.price - i.landed);
+  const vatOwed = valueAdded * vatRate / (1 + vatRate);
+
+  const commissionCost = i.price * (i.commission / 100);
+  const returnsCost    = i.price * (i.returns / 100);
+  const paymentCost    = i.price * (i.payment / 100);
+
+  const totalCosts = i.landed + commissionCost + vatOwed + i.pl3 + i.cac + returnsCost + paymentCost;
+  const netProfit  = i.price - totalCosts;
+  const netMargin  = i.price > 0 ? (netProfit / i.price) * 100 : 0;
+  const grossMargin = i.price > 0 ? ((i.price - i.landed) / i.price) * 100 : 0;
+
+  return {
+    price: i.price,
+    landed: i.landed,
+    commission: commissionCost,
+    vat: vatOwed,
+    pl3: i.pl3,
+    cac: i.cac,
+    returns: returnsCost,
+    payment: paymentCost,
+    totalCosts,
+    netProfit,
+    netMargin,
+    grossMargin
+  };
+}
+
+// ============ Break-even price (binary search) ============
+// أصغر سعر يحقّق هامش صافي مساوياً أو أكبر من targetPct، مع تثبيت بقيّة المُدخلات.
+function breakEvenPrice(targetPct, i) {
+  let lo = 0, hi = Math.max(i.price * 10, 10000);
+  for (let iter = 0; iter < 80; iter++) {
+    const mid = (lo + hi) / 2;
+    const r = compute({ ...i, price: mid });
+    const margin = mid > 0 ? (r.netProfit / mid) * 100 : -Infinity;
+    if (margin >= targetPct) hi = mid; else lo = mid;
+  }
+  // إذا الحد الأعلى لا يزال أعلى بكثير من السعر الحالي ولا يُعطي الهامش، فاعتبر النتيجة غير عملية.
+  return hi >= 9999 ? null : hi;
+}
+
+// ============ Sensitivity table ============
+// أثر التغيّر ±10/±20% على CAC / تكلفة مُستوردة / مخصص الإرجاع على صافي الربح.
+function sensitivity(i) {
+  const vars = [
+    { key: 'cac',     label: 'CAC' },
+    { key: 'landed',  label: 'التكلفة المُستوردة' },
+    { key: 'returns', label: 'مخصص الإرجاع' }
+  ];
+  const shifts = [-20, -10, 0, 10, 20];
+  return vars.map(v => ({
+    label: v.label,
+    cells: shifts.map(shift => {
+      const newVal = i[v.key] * (1 + shift / 100);
+      const r = compute({ ...i, [v.key]: newVal });
+      return { shift, profit: r.netProfit, margin: r.netMargin };
+    })
+  }));
+}
+
+// ============ Projection ============
+function projection(r, volume) {
+  const v = Math.max(0, volume);
+  return {
+    monthlyProfit:  r.netProfit * v,
+    monthlyRevenue: r.price * v,
+    annualProfit:   r.netProfit * v * 12,
+    annualRevenue:  r.price * v * 12,
+    volume:         v
+  };
+}
+
+// ============ Format ============
+function fmt(n, d = 2) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+
+function fmtInt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return Math.round(Number(n)).toLocaleString('en-US');
+}
+
+// ============ Render ============
+function render() {
+  const i = getInputs();
+  const r = compute(i);
+
+  document.getElementById('r-price').textContent      = fmt(r.price);
+  document.getElementById('r-landed').textContent     = fmt(r.landed);
+  document.getElementById('r-commission').textContent = fmt(r.commission);
+  document.getElementById('r-vat').textContent        = fmt(r.vat);
+  document.getElementById('r-3pl').textContent        = fmt(r.pl3);
+  document.getElementById('r-cac').textContent        = fmt(r.cac);
+  document.getElementById('r-returns').textContent    = fmt(r.returns);
+  document.getElementById('r-payment').textContent    = fmt(r.payment);
+  document.getElementById('r-profit').textContent     = fmt(r.netProfit);
+
+  document.getElementById('net-profit').textContent   = fmt(r.netProfit);
+  document.getElementById('net-margin').textContent   = fmt(r.netMargin, 1);
+  document.getElementById('gross-margin').textContent = fmt(r.grossMargin, 1);
+
+  // Verdict
+  const headline = document.getElementById('headline');
+  const badge = document.getElementById('margin-badge');
+  headline.classList.remove('good', 'warn', 'bad');
+  if (r.netMargin >= 25) {
+    headline.classList.add('good');
+    badge.textContent = 'مُربح';
+    badge.style.background = 'rgba(59,109,17,0.15)';
+    badge.style.color = 'var(--good)';
+  } else if (r.netMargin >= 15) {
+    headline.classList.add('warn');
+    badge.textContent = 'مقبول';
+    badge.style.background = 'rgba(133,79,11,0.15)';
+    badge.style.color = 'var(--warn)';
+  } else if (r.netMargin > 0) {
+    headline.classList.add('bad');
+    badge.textContent = 'إعادة تسعير';
+    badge.style.background = 'rgba(121,31,31,0.15)';
+    badge.style.color = 'var(--bad)';
+  } else {
+    headline.classList.add('bad');
+    badge.textContent = 'خسارة';
+    badge.style.background = 'rgba(121,31,31,0.15)';
+    badge.style.color = 'var(--bad)';
+  }
+
+  // Waterfall
+  renderStack(r);
+  renderProjection(r, i.volume);
+  renderBreakEven(i);
+  renderSensitivity(i);
+}
+
+function renderProjection(r, volume) {
+  const p = projection(r, volume);
+  const grid = document.getElementById('projection-grid');
+  const profitClass = p.monthlyProfit > 0 ? 'profit' : (p.monthlyProfit < 0 ? 'loss' : '');
+  grid.innerHTML = `
+    <div class="projection-card ${profitClass}">
+      <div class="pc-label">الربح الشهري (${fmtInt(p.volume)} طلب)</div>
+      <div><span class="pc-value">${fmtInt(p.monthlyProfit)}</span><span class="pc-unit">ر.س</span></div>
+    </div>
+    <div class="projection-card ${profitClass}">
+      <div class="pc-label">الربح السنوي (×12 شهر)</div>
+      <div><span class="pc-value">${fmtInt(p.annualProfit)}</span><span class="pc-unit">ر.س</span></div>
+    </div>
+    <div class="projection-card">
+      <div class="pc-label">الإيراد الشهري</div>
+      <div><span class="pc-value">${fmtInt(p.monthlyRevenue)}</span><span class="pc-unit">ر.س</span></div>
+    </div>
+    <div class="projection-card">
+      <div class="pc-label">الإيراد السنوي</div>
+      <div><span class="pc-value">${fmtInt(p.annualRevenue)}</span><span class="pc-unit">ر.س</span></div>
+    </div>
+  `;
+}
+
+function renderBreakEven(i) {
+  const targets = [
+    { pct: 0,  label: 'تعادُل (0%)',     cls: 'neutral' },
+    { pct: 15, label: 'مقبول (15%)',   cls: 'target' },
+    { pct: 25, label: 'مُربح (25%)',    cls: 'pos' }
+  ];
+  const tbody = document.getElementById('breakeven-rows');
+  tbody.innerHTML = targets.map(t => {
+    const p = breakEvenPrice(t.pct, i);
+    if (p === null) {
+      return `<tr>
+        <td>${t.label}</td>
+        <td class="neutral">غير ممكن بالتكاليف الحالية</td>
+        <td>—</td>
+      </tr>`;
+    }
+    const diff = p - i.price;
+    const diffPct = i.price > 0 ? (diff / i.price) * 100 : 0;
+    const diffSign = diff > 0 ? '+' : '';
+    const diffClass = diff > 0 ? 'neg' : (diff < 0 ? 'pos' : 'neutral');
+    return `<tr>
+      <td>${t.label}</td>
+      <td class="${t.cls} num">${fmt(p, 2)} ر.س</td>
+      <td class="${diffClass} num">${diffSign}${fmt(diff, 2)} (${diffSign}${fmt(diffPct, 1)}%)</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderSensitivity(i) {
+  const rows = sensitivity(i);
+  const tbody = document.getElementById('sensitivity-rows');
+  tbody.innerHTML = rows.map(row => {
+    return `<tr>
+      <td>${escapeHtml(row.label)}</td>
+      ${row.cells.map(c => {
+        const cls = c.profit > 0 ? 'pos' : (c.profit < 0 ? 'neg' : 'neutral');
+        return `<td class="${cls} num">${fmt(c.profit, 0)}</td>`;
+      }).join('')}
+    </tr>`;
+  }).join('');
+}
+
+const SEG_COLORS = {
+  profit:     { fill: '#C9A961', label: 'صافي الربح' },
+  landed:     { fill: '#1E2A44', label: 'تكلفة مُستوردة' },
+  commission: { fill: '#8B9A7E', label: 'عمولة المنصة' },
+  vat:        { fill: '#C97B7B', label: 'VAT' },
+  pl3:        { fill: '#6B6F7A', label: '3PL' },
+  cac:        { fill: '#D89177', label: 'CAC' },
+  returns:    { fill: '#B4B2A9', label: 'مخصص الإرجاع' },
+  payment:    { fill: '#888780', label: 'رسوم الدفع' }
+};
+
+function renderStack(r) {
+  const isLoss = r.netProfit < 0;
+  const bannerEl = document.getElementById('loss-banner');
+  bannerEl.style.display = isLoss ? '' : 'none';
+
+  // عند الخسارة: نعرض كل التكاليف كنسبة من السعر، ونضيف شريحة "خسارة" بنفس لون الخطر بدل الربح.
+  // المُجموع المرجعي هو السعر (وليس مجموع التكاليف) — التكاليف تتجاوز السعر.
+  const profitVal = Math.max(0, r.netProfit);
+  const lossVal   = Math.max(0, -r.netProfit);
+  const segs = [
+    { key: 'profit',     val: profitVal,    label: 'صافي الربح' },
+    { key: 'landed',     val: r.landed,     label: 'تكلفة مُستوردة' },
+    { key: 'commission', val: r.commission, label: 'عمولة المنصة' },
+    { key: 'vat',        val: r.vat,        label: 'VAT' },
+    { key: 'pl3',        val: r.pl3,        label: '3PL' },
+    { key: 'cac',        val: r.cac,        label: 'CAC' },
+    { key: 'returns',    val: r.returns,    label: 'مخصص الإرجاع' },
+    { key: 'payment',    val: r.payment,    label: 'رسوم الدفع' }
+  ];
+  if (isLoss) {
+    segs.push({ key: 'loss', val: lossVal, label: 'خسارة فوق السعر', fill: '#791F1F' });
+  }
+  const total = segs.reduce((s, x) => s + x.val, 0) || 1;
+
+  const bar = document.getElementById('stack-bar');
+  bar.classList.toggle('with-loss', isLoss);
+  bar.innerHTML = segs.map(s => {
+    const pct = (s.val / total) * 100;
+    const c = SEG_COLORS[s.key] || { fill: s.fill, label: s.label };
+    const tiny = pct < 6 ? 1 : 0;
+    return `<div class="stack-seg" data-tiny="${tiny}" style="width:${pct}%; background:${c.fill};" title="${escapeHtml(c.label)}: ${fmt(s.val)} ر.س (${pct.toFixed(1)}%)"><span>${pct.toFixed(0)}%</span></div>`;
+  }).join('');
+
+  const legend = document.getElementById('stack-legend');
+  legend.innerHTML = segs.map(s => {
+    const c = SEG_COLORS[s.key] || { fill: s.fill, label: s.label };
+    const pct = (s.val / total) * 100;
+    return `<div class="legend-item">
+      <span class="swatch" style="background:${c.fill};"></span>
+      <span class="lbl">${escapeHtml(c.label)}</span>
+      <span class="val">${fmt(s.val)} ر.س · ${pct.toFixed(1)}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ============ Presets ============
+function applySku(skuKey) {
+  const s = SKU_PRESETS[skuKey];
+  if (!s) return;
+  document.getElementById('i-price').value = s.price;
+  document.getElementById('i-landed').value = s.landed;
+  currentSku = skuKey;
+  document.querySelectorAll('[data-sku]').forEach(b => b.classList.toggle('active', b.dataset.sku === skuKey));
+  render();
+}
+
+function applyPlatform(pKey) {
+  const p = PLATFORM_PRESETS[pKey];
+  if (!p) return;
+  document.getElementById('i-commission').value = p.commission;
+  currentPlatform = pKey;
+  document.querySelectorAll('[data-platform]').forEach(b => b.classList.toggle('active', b.dataset.platform === pKey));
+  render();
+}
+
+// ============ Scenarios ============
+async function saveScenario() {
+  const name = document.getElementById('scenario-name').value.trim();
+  if (!name) { toast('الرجاء إدخال اسم للسيناريو.', 'error'); return; }
+  const i = getInputs();
+  const r = compute(i);
+  const sc = {
+    id: 'sc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    name,
+    sku: currentSku ? SKU_PRESETS[currentSku].name : '',
+    skuKey: currentSku || '',
+    platform: currentPlatform || '',
+    inputs: i,
+    result: r,
+    savedAt: Date.now()
+  };
+  await persistScenario(sc);
+  scenarios.unshift(sc);
+  document.getElementById('scenario-name').value = '';
+  renderScenarios();
+  toast('تم حفظ السيناريو "' + name + '".', 'success');
+}
+
+window.deleteScenario = async function(id) {
+  const sc = scenarios.find(s => s.id === id);
+  if (!sc) return;
+  const ok = await confirmModal('حذف السيناريو', 'سيتم حذف "' + sc.name + '" نهائياً. متابعة؟', 'حذف');
+  if (!ok) return;
+  await removeScenario(id);
+  scenarios = scenarios.filter(s => s.id !== id);
+  selectedScenarioIds.delete(id);
+  renderScenarios();
+  toast('تم الحذف.', 'success');
+};
+
+window.loadScenario = function(id) {
+  const s = scenarios.find(x => x.id === id);
+  if (!s) return;
+  setInputs(s.inputs);
+  // استرجاع حالة المنصة و SKU إن كانت محفوظة
+  if (s.skuKey && SKU_PRESETS[s.skuKey]) {
+    currentSku = s.skuKey;
+    document.querySelectorAll('[data-sku]').forEach(b => b.classList.toggle('active', b.dataset.sku === s.skuKey));
+  } else {
+    currentSku = null;
+    document.querySelectorAll('[data-sku]').forEach(b => b.classList.remove('active'));
+  }
+  if (s.platform && PLATFORM_PRESETS[s.platform]) {
+    currentPlatform = s.platform;
+    document.querySelectorAll('[data-platform]').forEach(b => b.classList.toggle('active', b.dataset.platform === s.platform));
+  } else {
+    currentPlatform = null;
+    document.querySelectorAll('[data-platform]').forEach(b => b.classList.remove('active'));
+  }
+  render();
+  toast('تم تحميل "' + s.name + '".');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.toggleScenarioCheck = function(id, checked) {
+  if (checked) selectedScenarioIds.add(id);
+  else selectedScenarioIds.delete(id);
+  // حدّث صف الـ tr
+  const tr = document.querySelector('tr[data-scid="' + id + '"]');
+  if (tr) tr.classList.toggle('checked', checked);
+  // حدّث "تحديد الكل"
+  const checkAll = document.getElementById('check-all');
+  if (checkAll) {
+    checkAll.checked = selectedScenarioIds.size === scenarios.length && scenarios.length > 0;
+    checkAll.indeterminate = selectedScenarioIds.size > 0 && selectedScenarioIds.size < scenarios.length;
+  }
+};
+
+function renderScenarios() {
+  const tbody = document.getElementById('scenarios-rows');
+  const empty = document.getElementById('empty-scenarios');
+  if (scenarios.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    const checkAll = document.getElementById('check-all');
+    if (checkAll) { checkAll.checked = false; checkAll.indeterminate = false; }
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = scenarios.map(s => {
+    const date = new Date(s.savedAt).toISOString().slice(0, 10);
+    const marginClass = s.result.netMargin >= 25 ? 'good' : s.result.netMargin >= 15 ? 'warn' : 'bad';
+    const colorMap = { good: 'var(--good)', warn: 'var(--warn)', bad: 'var(--bad)' };
+    const checked = selectedScenarioIds.has(s.id);
+    return `<tr data-scid="${s.id}" class="${checked ? 'checked' : ''}">
+      <td class="row-check">
+        <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleScenarioCheck('${s.id}', this.checked)" title="تحديد للمقارنة">
+      </td>
+      <td>
+        <div style="font-weight:500; color: var(--navy);">${escapeHtml(s.name)}</div>
+        <div style="font-size:11px; color: var(--muted);">${escapeHtml(s.sku || '—')} ${s.platform ? '· ' + escapeHtml(s.platform) : ''}</div>
+      </td>
+      <td class="num">${fmt(s.inputs.price)}</td>
+      <td class="num">${fmt(s.inputs.landed)}</td>
+      <td class="num">${fmt(s.inputs.commission, 1)}%</td>
+      <td class="num" style="font-weight:600; color:${colorMap[marginClass]};">${fmt(s.result.netProfit)}</td>
+      <td class="num" style="color:${colorMap[marginClass]};">${fmt(s.result.netMargin, 1)}%</td>
+      <td class="num" style="color: var(--muted);">${fmt(s.result.grossMargin, 1)}%</td>
+      <td class="num" style="font-size:11px; color: var(--muted);">${date}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn-icon" onclick="loadScenario('${s.id}')" title="تحميل">↺</button>
+        <button class="btn-icon danger" onclick="deleteScenario('${s.id}')" title="حذف">×</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  const checkAll = document.getElementById('check-all');
+  if (checkAll) {
+    checkAll.checked = selectedScenarioIds.size === scenarios.length;
+    checkAll.indeterminate = selectedScenarioIds.size > 0 && selectedScenarioIds.size < scenarios.length;
+  }
+}
+
+// ============ Compare ============
+function renderCompare() {
+  const ids = Array.from(selectedScenarioIds);
+  if (ids.length < 2) {
+    toast('اختر سيناريوهَين أو أكثر للمقارنة.', 'error');
+    return;
+  }
+  const selected = ids.map(id => scenarios.find(s => s.id === id)).filter(Boolean);
+  if (selected.length < 2) return;
+
+  const rows = [
+    { lbl: 'السيناريو',          get: s => s.name,                                  fmt: 'text' },
+    { lbl: 'SKU',                get: s => s.sku || '—',                            fmt: 'text' },
+    { lbl: 'المنصة',              get: s => s.platform || '—',                       fmt: 'text' },
+    { lbl: 'السعر',              get: s => s.inputs.price,                          fmt: 'sar' },
+    { lbl: 'التكلفة المُستوردة',  get: s => s.inputs.landed,                         fmt: 'sar' },
+    { lbl: 'عمولة',              get: s => s.inputs.commission,                     fmt: 'pct' },
+    { lbl: 'CAC',                get: s => s.inputs.cac,                            fmt: 'sar' },
+    { lbl: 'الحجم الشهري',       get: s => s.inputs.volume || 0,                   fmt: 'int' },
+    { lbl: 'صافي الربح للوحدة',   get: s => s.result.netProfit,                      fmt: 'sar', verdict: true },
+    { lbl: 'هامش صافي %',        get: s => s.result.netMargin,                      fmt: 'pct', verdict: true },
+    { lbl: 'هامش إجمالي %',       get: s => s.result.grossMargin,                    fmt: 'pct' },
+    { lbl: 'الربح الشهري',        get: s => (s.result.netProfit) * (s.inputs.volume || 0), fmt: 'sar', verdict: true },
+    { lbl: 'الربح السنوي',        get: s => (s.result.netProfit) * (s.inputs.volume || 0) * 12, fmt: 'sar', verdict: true }
+  ];
+
+  function fmtCell(val, kind) {
+    if (kind === 'text') return escapeHtml(String(val));
+    if (val == null || isNaN(val)) return '—';
+    if (kind === 'sar') return fmt(val, 2) + ' ر.س';
+    if (kind === 'pct') return fmt(val, 1) + '%';
+    if (kind === 'int') return fmtInt(val);
+    return String(val);
+  }
+
+  // pick best/worst per row when verdict=true (numeric only)
+  const html = `
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>المؤشّر</th>
+          ${selected.map(s => `<th>${escapeHtml(s.name)}</th>`).join('')}
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(r => {
+          const vals = selected.map(s => r.get(s));
+          let bestIdx = -1, worstIdx = -1;
+          if (r.verdict) {
+            const numVals = vals.map(v => Number(v));
+            const max = Math.max(...numVals);
+            const min = Math.min(...numVals);
+            if (max !== min) {
+              bestIdx = numVals.indexOf(max);
+              worstIdx = numVals.indexOf(min);
+            }
+          }
+          return `<tr>
+            <td class="row-label">${escapeHtml(r.lbl)}</td>
+            ${vals.map((v, idx) => {
+              let cls = '';
+              if (r.verdict && idx === bestIdx) cls = 'row-good';
+              else if (r.verdict && idx === worstIdx) cls = 'row-bad';
+              return `<td class="${cls}">${fmtCell(v, r.fmt)}</td>`;
+            }).join('')}
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('compare-body').innerHTML = html;
+  const panel = document.getElementById('compare-panel');
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function exportScenarios() {
+  if (scenarios.length === 0) { toast('لا توجد سيناريوهات للتصدير.', 'error'); return; }
+  const headers = ['Scenario','SKU','Platform','Price','Landed','Commission %','VAT %','3PL','CAC','Returns %','Payment %','Volume/mo','Net Profit SAR','Net Margin %','Gross Margin %','Monthly Profit','Annual Profit','Saved'];
+  const rows = scenarios.map(s => {
+    const monthly = (s.result.netProfit || 0) * (s.inputs.volume || 0);
+    return [
+      s.name, s.sku, s.platform,
+      s.inputs.price, s.inputs.landed, s.inputs.commission, s.inputs.vat,
+      s.inputs.pl3, s.inputs.cac, s.inputs.returns, s.inputs.payment, s.inputs.volume || 0,
+      s.result.netProfit.toFixed(2), s.result.netMargin.toFixed(2), s.result.grossMargin.toFixed(2),
+      monthly.toFixed(2), (monthly * 12).toFixed(2),
+      new Date(s.savedAt).toISOString().slice(0,10)
+    ].map(v => {
+      const x = String(v == null ? '' : v);
+      return /[",\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x;
+    }).join(',');
+  });
+  const csv = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+  download('malmas_margin_scenarios_' + new Date().toISOString().slice(0,10) + '.csv', csv, 'text/csv;charset=utf-8');
+  toast('\u062A\u0645 \u062A\u0635\u062F\u064A\u0631 CSV.', 'success');
+}
+
+function download(filename, content, mime) {
+  const blob = new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportJSON() {
+  if (scenarios.length === 0) { toast('\u0644\u0627 \u062A\u0648\u062C\u062F \u0633\u064A\u0646\u0627\u0631\u064A\u0648\u0647\u0627\u062A \u0644\u0644\u062A\u0635\u062F\u064A\u0631.', 'error'); return; }
+  download(
+    'malmas_margin_scenarios_' + new Date().toISOString().slice(0,10) + '.json',
+    JSON.stringify(scenarios, null, 2),
+    'application/json;charset=utf-8'
+  );
+  toast('\u062A\u0645 \u062A\u0635\u062F\u064A\u0631 JSON.', 'success');
+}
+
+async function importJSON(file) {
+  let imported;
+  try {
+    const text = await file.text();
+    imported = JSON.parse(text);
+  } catch {
+    toast('\u0627\u0644\u0645\u0644\u0641 \u0644\u064A\u0633 JSON \u0635\u0627\u0644\u062D\u0627\u064B.', 'error');
+    return;
+  }
+  const list = Array.isArray(imported) ? imported : [imported];
+  let added = 0;
+  for (const raw of list) {
+    if (!raw || !raw.inputs || !raw.result) continue;
+    const sc = {
+      id: 'sc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      name: (raw.name || '\u0645\u0633\u062A\u0648\u0631\u062F') + ' (\u0645\u0633\u062A\u0648\u0631\u062F)',
+      sku: raw.sku || '',
+      skuKey: raw.skuKey || '',
+      platform: raw.platform || '',
+      inputs: raw.inputs,
+      result: raw.result,
+      savedAt: Date.now()
+    };
+    await persistScenario(sc);
+    scenarios.unshift(sc);
+    added++;
+  }
+  renderScenarios();
+  if (added === 0) toast('\u0644\u0645 \u064A\u062A\u0645 \u062A\u0639\u0631\u064A\u0641 \u0623\u064A \u0633\u064A\u0646\u0627\u0631\u064A\u0648 \u0641\u064A \u0627\u0644\u0645\u0644\u0641.', 'error');
+  else toast('\u062A\u0645 \u0627\u0633\u062A\u064A\u0631\u0627\u062F ' + added + ' \u0633\u064A\u0646\u0627\u0631\u064A\u0648.', 'success');
+}
+
+async function resetToDefaults() {
+  const ok = await confirmModal('\u0627\u0633\u062A\u0631\u062C\u0627\u0639 \u0627\u0644\u0645\u064F\u062F\u062E\u0644\u0627\u062A \u0627\u0644\u0627\u0641\u062A\u0631\u0627\u0636\u064A\u0629', '\u0633\u064A\u062A\u0645 \u0627\u0633\u062A\u0628\u062F\u0627\u0644 \u0627\u0644\u0642\u064A\u0645 \u0627\u0644\u062D\u0627\u0644\u064A\u0629 \u0628\u0642\u064A\u0645 SKU 1 \u0639\u0644\u0649 Noon. \u0645\u062A\u0627\u0628\u0639\u0629\u061F', '\u0627\u0633\u062A\u0631\u062C\u0627\u0639');
+  if (!ok) return;
+  setInputs(DEFAULT_INPUTS);
+  applySku('sku1');
+  applyPlatform('noon');
+  render();
+  toast('\u062A\u0645 \u0627\u0644\u0627\u0633\u062A\u0631\u062C\u0627\u0639.', 'success');
+}
+
+// ============ Events ============
+['i-price','i-landed','i-commission','i-vat','i-3pl','i-cac','i-returns','i-payment','i-volume']
+  .forEach(id => document.getElementById(id).addEventListener('input', render));
+
+document.querySelectorAll('[data-sku]').forEach(b => b.addEventListener('click', () => applySku(b.dataset.sku)));
+document.querySelectorAll('[data-platform]').forEach(b => b.addEventListener('click', () => applyPlatform(b.dataset.platform)));
+
+document.getElementById('save-scenario').addEventListener('click', saveScenario);
+document.getElementById('export-scenarios').addEventListener('click', exportScenarios);
+document.getElementById('export-json-btn').addEventListener('click', exportJSON);
+document.getElementById('import-json-btn').addEventListener('click', () => document.getElementById('import-file').click());
+document.getElementById('import-file').addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (f) await importJSON(f);
+  e.target.value = '';
+});
+document.getElementById('reset-btn').addEventListener('click', resetToDefaults);
+document.getElementById('print-btn').addEventListener('click', () => window.print());
+document.getElementById('compare-btn').addEventListener('click', renderCompare);
+document.getElementById('compare-close').addEventListener('click', () => {
+  document.getElementById('compare-panel').classList.remove('show');
+});
+
+document.getElementById('check-all').addEventListener('change', (e) => {
+  if (e.target.checked) scenarios.forEach(s => selectedScenarioIds.add(s.id));
+  else selectedScenarioIds.clear();
+  renderScenarios();
+});
+
+// Enter في حقل الاسم يحفظ السيناريو مباشرة
+document.getElementById('scenario-name').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); saveScenario(); }
+});
+
+// Init
+applySku('sku1');
+applyPlatform('noon');
+loadScenarios();
+</script>
+</body>
+</html>

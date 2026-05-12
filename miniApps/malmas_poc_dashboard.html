@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مَلْمَس · لوحة المؤثرات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --surface: #FFFFFF;
+    --navy: #1E2A44;
+    --navy-deep: #14203A;
+    --gold: #C9A961;
+    --gold-soft: #E5D5A8;
+    --sage: #8B9A7E;
+    --rose: #C97B7B;
+    --muted: #6B6F7A;
+    --ink: #2A2E36;
+    --border: #E8E2D5;
+    --border-soft: #F0EBE0;
+    --shade: #F5F1E8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); color: var(--ink); font-family: 'Tajawal', system-ui, sans-serif; font-size: 15px; line-height: 1.6; }
+  .num { font-family: 'Inter', sans-serif; font-feature-settings: "tnum" 1; direction: ltr; unicode-bidi: isolate; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  /* Header */
+  header { display: flex; flex-direction: column; gap: 8px; padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+  .brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .wordmark { font-family: 'Amiri', serif; font-size: 38px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+  .divider { color: var(--gold); font-size: 22px; }
+  .page-title { font-size: 18px; font-weight: 500; color: var(--ink); }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .tag { display: inline-block; background: var(--shade); color: var(--navy); font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 4px; margin-inline-start: 8px; }
+
+  /* KPI grid */
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 32px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .kpi-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+  .kpi-value { font-size: 26px; font-weight: 600; color: var(--navy); letter-spacing: -0.3px; }
+  .kpi-unit { font-size: 13px; color: var(--muted); margin-inline-start: 4px; }
+  .kpi.accent { background: var(--navy); }
+  .kpi.accent .kpi-label { color: var(--gold-soft); }
+  .kpi.accent .kpi-value { color: var(--surface); }
+  .kpi.accent .kpi-unit { color: var(--gold-soft); }
+
+  /* Toolbar */
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .btn { font-family: inherit; font-size: 14px; font-weight: 500; padding: 9px 18px; border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+  .btn-primary { background: var(--navy); color: var(--surface); border-color: var(--navy); }
+  .btn-primary:hover { background: var(--navy-deep); }
+  .btn-ghost { background: transparent; color: var(--navy); border-color: var(--border); }
+  .btn-ghost:hover { background: var(--shade); border-color: var(--gold); }
+  .btn-danger { background: transparent; color: var(--rose); border-color: transparent; padding: 4px 8px; font-size: 13px; }
+  .btn-danger:hover { background: #FBEEEE; }
+  .sort-group { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
+  .sort-group label { font-size: 13px; color: var(--muted); }
+  select, input, textarea { font-family: inherit; font-size: 14px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--ink); }
+  select:focus, input:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15); }
+
+  /* Add form */
+  .form-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+  .form-panel.hidden { display: none; }
+  .form-title { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft); }
+  .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .field input, .field select, .field textarea { width: 100%; }
+  .field.full { grid-column: 1 / -1; }
+  .form-actions { display: flex; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-soft); }
+
+  /* Table */
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--shade); }
+  th { text-align: start; padding: 14px 14px; font-size: 12px; font-weight: 700; color: var(--navy); text-transform: none; letter-spacing: 0; border-bottom: 1px solid var(--border); }
+  td { padding: 14px 14px; border-bottom: 1px solid var(--border-soft); font-size: 14px; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--shade); }
+  .empty { text-align: center; padding: 60px 24px; color: var(--muted); }
+  .empty-icon { font-family: 'Amiri', serif; font-size: 48px; color: var(--gold-soft); margin-bottom: 12px; }
+
+  .handle { color: var(--muted); font-size: 12px; }
+  .platform-pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; background: var(--shade); color: var(--navy); }
+
+  .verdict { display: inline-block; font-size: 12px; padding: 4px 10px; border-radius: 4px; font-weight: 500; }
+  .verdict.good { background: #E8F0E2; color: #3B6D11; }
+  .verdict.ok { background: #FAEEDA; color: #854F0B; }
+  .verdict.bad { background: #FCEBEB; color: #791F1F; }
+  .verdict.none { background: var(--shade); color: var(--muted); }
+
+  /* Settings */
+  .settings { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 24px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .settings-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .settings input { width: 90px; }
+
+  /* Footer */
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 13px; }
+  footer .quote { font-family: 'Amiri', serif; font-size: 15px; color: var(--gold); }
+
+  /* Responsive */
+  @media (max-width: 880px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .wrap { padding: 20px 16px 60px; }
+    .wordmark { font-size: 30px; }
+    th, td { padding: 10px 8px; font-size: 13px; }
+    .table-wrap { overflow-x: auto; }
+    .filters-bar { flex-direction: column; align-items: stretch !important; }
+    .filters-bar select, .filters-bar input { width: 100%; }
+  }
+
+  /* === Added: extra KPIs, filters, toast, modal, platform breakdown, print === */
+  .kpi-grid { grid-template-columns: repeat(6, 1fr); }
+  @media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 880px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .breakdown-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 24px; }
+  .breakdown-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 14px; }
+  .breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .breakdown-card { background: var(--shade); border-radius: 8px; padding: 12px 14px; }
+  .breakdown-card.best { background: #E8F0E2; border-inline-start: 3px solid #3B6D11; }
+  .breakdown-card.worst { background: #FCEBEB; border-inline-start: 3px solid #791F1F; }
+  .breakdown-card .bc-platform { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .breakdown-card .bc-stat { font-size: 12px; color: var(--muted); }
+  .breakdown-card .bc-stat strong { color: var(--ink); font-family: 'Inter', sans-serif; }
+
+  .filters-bar {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px; flex-wrap: wrap;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+  }
+  .filters-bar select, .filters-bar input {
+    font-family: inherit; font-size: 13px; padding: 7px 12px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--ink);
+  }
+  .filters-bar .filter-label {
+    font-size: 12px; color: var(--muted); font-weight: 500; margin-inline-end: 4px;
+  }
+  .filters-bar .spacer { flex: 1; }
+  .filters-bar .clear-filters {
+    font-size: 12px; padding: 6px 12px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); border-radius: 6px; cursor: pointer;
+  }
+  .filters-bar .clear-filters:hover { border-color: var(--gold); color: var(--navy); }
+
+  .status-pill {
+    display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 4px;
+    font-weight: 500; background: var(--shade); color: var(--navy);
+  }
+  .status-pill.live { background: #E8F0E2; color: #3B6D11; }
+  .status-pill.progress { background: #FAEEDA; color: #854F0B; }
+  .status-pill.scheduled { background: var(--gold-soft); color: #854F0B; }
+  .status-pill.done { background: var(--shade); color: var(--muted); }
+
+  .density { font-size: 11px; color: var(--muted); font-family: 'Inter', sans-serif; margin-top: 2px; }
+
+  .hidden-input { display: none; }
+  .toolbar-btn {
+    font-family: inherit; font-size: 13px; padding: 8px 14px;
+    border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--navy); font-weight: 500;
+  }
+  .toolbar-btn:hover { border-color: var(--gold); background: var(--shade); }
+
+  /* Toast */
+  .toast-wrap { position: fixed; top: 24px; inset-inline-end: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .toast {
+    background: var(--navy); color: var(--surface);
+    padding: 12px 18px; border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(20, 32, 58, 0.25);
+    font-size: 14px; font-weight: 500;
+    pointer-events: auto;
+    border-inline-start: 3px solid var(--gold);
+    max-width: 360px;
+  }
+  .toast.success { border-inline-start-color: #3B6D11; }
+  .toast.error { background: #791F1F; border-inline-start-color: #FBC9C9; }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20, 32, 58, 0.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--surface); border-radius: 12px; padding: 28px; max-width: 460px; width: 100%; }
+  .modal h3 { font-family: 'Amiri', serif; font-size: 22px; color: var(--navy); margin-bottom: 8px; }
+  .modal p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+  /* Print */
+  @media print {
+    body { background: white; }
+    .toolbar, .form-panel, .filters-bar, .toast-wrap, .modal-overlay, footer { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; }
+    .kpi-grid { grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .kpi { padding: 8px 10px; box-shadow: none !important; border: 1px solid #999 !important; }
+    .kpi-value { font-size: 18px; }
+    .breakdown-panel, .table-wrap { border: 1px solid #999 !important; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <span class="wordmark">مَلْمَس</span>
+      <span class="divider">◆</span>
+      <span class="page-title">لوحة المؤثرات</span>
+      <span class="tag">POC · الطلب المسبق</span>
+    </div>
+    <p class="subtitle">تتبّع أداء كل مؤثرة قبل الالتزام بالمخزون الكامل — أرقام واضحة، قرارات أوضح.</p>
+  </header>
+
+  <section class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">عدد المؤثرات</div>
+      <div class="kpi-value"><span class="num" id="kpi-count">0</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">إجمالي الطلبات</div>
+      <div class="kpi-value"><span class="num" id="kpi-orders">0</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">إجمالي الإنفاق</div>
+      <div class="kpi-value"><span class="num" id="kpi-spend">0</span><span class="kpi-unit">ر.س</span></div>
+    </div>
+    <div class="kpi accent">
+      <div class="kpi-label">متوسط CAC</div>
+      <div class="kpi-value"><span class="num" id="kpi-cac">—</span><span class="kpi-unit">ر.س</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">متوسط ROAS</div>
+      <div class="kpi-value"><span class="num" id="kpi-roas">—</span><span class="kpi-unit">×</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">نسبة "أعد التعاقد"</div>
+      <div class="kpi-value"><span class="num" id="kpi-success">—</span><span class="kpi-unit">%</span></div>
+    </div>
+  </section>
+
+  <section class="breakdown-panel" id="breakdown-panel" style="display:none;">
+    <div class="breakdown-title">أداء حسب المنصّة</div>
+    <div class="breakdown-grid" id="breakdown-grid"></div>
+  </section>
+
+  <div class="settings">
+    <span class="settings-label">عتبات تقييم CAC (ر.س لكل طلب):</span>
+    <span class="settings-label">جيد ≤</span>
+    <input type="number" id="threshold-good" value="35" min="0" step="1" class="num">
+    <span class="settings-label">مقبول ≤</span>
+    <input type="number" id="threshold-ok" value="70" min="0" step="1" class="num">
+    <span class="settings-label" style="margin-inline-start:auto;">أعلى من المقبول = لا تعاقد</span>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn btn-primary" id="add-btn">+ إضافة مؤثرة</button>
+    <button class="toolbar-btn" id="export-btn">⇣ CSV</button>
+    <button class="toolbar-btn" id="export-json-btn">⇣ JSON</button>
+    <button class="toolbar-btn" id="import-json-btn">⇡ استيراد JSON</button>
+    <input type="file" id="import-file" class="hidden-input" accept="application/json,.json">
+    <button class="toolbar-btn" id="print-btn">🖨 طباعة</button>
+    <button class="btn btn-ghost" id="clear-btn" style="color: var(--rose);">× مسح الكل</button>
+    <div class="sort-group">
+      <label for="sort">ترتيب:</label>
+      <select id="sort">
+        <option value="cac-asc">الأفضل أداءً (CAC الأقل)</option>
+        <option value="cac-desc">الأسوأ أداءً (CAC الأعلى)</option>
+        <option value="roas-desc">الأعلى ROAS</option>
+        <option value="orders-desc">الأكثر طلبات</option>
+        <option value="revenue-desc">الأعلى مبيعات</option>
+        <option value="date-desc">الأحدث أولاً</option>
+        <option value="date-asc">الأقدم أولاً</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="filters-bar">
+    <span class="filter-label">بحث:</span>
+    <input id="filter-search" type="search" placeholder="اسم أو @حساب…" style="min-width: 200px;">
+    <span class="filter-label">المنصّة:</span>
+    <select id="filter-platform">
+      <option value="">كل المنصّات</option>
+      <option value="Instagram">Instagram</option>
+      <option value="TikTok">TikTok</option>
+      <option value="Snapchat">Snapchat</option>
+      <option value="X">X (Twitter)</option>
+      <option value="YouTube">YouTube</option>
+    </select>
+    <span class="filter-label">الحالة:</span>
+    <select id="filter-status">
+      <option value="">كل الحالات</option>
+      <option value="نُشر">نُشر</option>
+      <option value="قيد التنفيذ">قيد التنفيذ</option>
+      <option value="مجدول">مجدول</option>
+      <option value="منتهي">منتهي</option>
+    </select>
+    <span class="filter-label">المنتج:</span>
+    <select id="filter-sku">
+      <option value="">كل المنتجات</option>
+      <option value="SKU 1 — منظم العربة">SKU 1</option>
+      <option value="SKU 2 — وسادة الرضاعة">SKU 2</option>
+      <option value="SKU 3 — سجادة الحروف">SKU 3</option>
+      <option value="SKU 4 — هدية العقيقة">SKU 4</option>
+      <option value="SKU 5 — حقيبة الحفاضات">SKU 5</option>
+      <option value="SKU 6 — مصباح + صوت">SKU 6</option>
+      <option value="SKU 7 — طقم سيليكون">SKU 7</option>
+      <option value="SKU 8 — الدُمى">SKU 8</option>
+      <option value="متعدد">متعدد</option>
+    </select>
+    <div class="spacer"></div>
+    <button class="clear-filters" id="clear-filters">× إفراغ الفلاتر</button>
+  </div>
+
+  <section class="form-panel hidden" id="form-panel">
+    <div class="form-title" id="form-title">إضافة مؤثرة جديدة</div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="f-name">اسم المؤثرة</label>
+        <input id="f-name" type="text" placeholder="مثال: ريم الخالد">
+      </div>
+      <div class="field">
+        <label for="f-handle">@الحساب</label>
+        <input id="f-handle" type="text" placeholder="@reem_baby" dir="ltr">
+      </div>
+      <div class="field">
+        <label for="f-platform">المنصة</label>
+        <select id="f-platform">
+          <option value="Instagram">Instagram</option>
+          <option value="TikTok">TikTok</option>
+          <option value="Snapchat">Snapchat</option>
+          <option value="X">X (Twitter)</option>
+          <option value="YouTube">YouTube</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-followers">عدد المتابعين</label>
+        <input id="f-followers" type="number" min="0" placeholder="25000" class="num">
+      </div>
+      <div class="field">
+        <label for="f-sku">المنتج المُسوَّق</label>
+        <select id="f-sku">
+          <option value="SKU 1 — منظم العربة">SKU 1 — منظم العربة</option>
+          <option value="SKU 2 — وسادة الرضاعة">SKU 2 — وسادة الرضاعة</option>
+          <option value="SKU 3 — سجادة الحروف">SKU 3 — سجادة الحروف</option>
+          <option value="SKU 4 — هدية العقيقة">SKU 4 — هدية العقيقة</option>
+          <option value="SKU 5 — حقيبة الحفاضات">SKU 5 — حقيبة الحفاضات</option>
+          <option value="SKU 6 — مصباح + صوت">SKU 6 — مصباح + صوت</option>
+          <option value="SKU 7 — طقم سيليكون">SKU 7 — طقم سيليكون</option>
+          <option value="SKU 8 — الدُمى">SKU 8 — الدُمى</option>
+          <option value="متعدد">متعدد المنتجات</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-deal">نوع التعاقد</label>
+        <select id="f-deal">
+          <option value="هدية">هدية فقط</option>
+          <option value="مدفوع">مدفوع</option>
+          <option value="عمولة">عمولة على المبيعات</option>
+          <option value="مختلط">هدية + مدفوع</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-cost">التكلفة الكلية (ر.س)</label>
+        <input id="f-cost" type="number" min="0" step="0.01" placeholder="850" class="num">
+      </div>
+      <div class="field">
+        <label for="f-coupon">كود الخصم</label>
+        <input id="f-coupon" type="text" placeholder="REEM10" dir="ltr">
+      </div>
+      <div class="field">
+        <label for="f-date">تاريخ النشر</label>
+        <input id="f-date" type="date">
+      </div>
+      <div class="field">
+        <label for="f-orders">الطلبات المُحققة</label>
+        <input id="f-orders" type="number" min="0" placeholder="18" class="num">
+      </div>
+      <div class="field">
+        <label for="f-revenue">إجمالي المبيعات (ر.س)</label>
+        <input id="f-revenue" type="number" min="0" step="0.01" placeholder="2700" class="num">
+      </div>
+      <div class="field">
+        <label for="f-status">حالة الحملة</label>
+        <select id="f-status">
+          <option value="نُشر">نُشر</option>
+          <option value="قيد التنفيذ">قيد التنفيذ</option>
+          <option value="مجدول">مجدول</option>
+          <option value="منتهي">منتهي</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="f-notes">ملاحظات</label>
+        <textarea id="f-notes" rows="2" placeholder="جودة المحتوى، التفاعل، تعليقات الجمهور، تكلفة شحن العينة..."></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="save-btn">حفظ</button>
+      <button class="btn btn-ghost" id="cancel-btn">إلغاء</button>
+    </div>
+  </section>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>المؤثرة</th>
+          <th>المنصة</th>
+          <th>المتابعون</th>
+          <th>المنتج</th>
+          <th>التكلفة</th>
+          <th>الطلبات</th>
+          <th>المبيعات</th>
+          <th>CAC</th>
+          <th>ROAS</th>
+          <th>التقييم</th>
+          <th>الحالة</th>
+          <th>التاريخ</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty">
+      <div class="empty-icon">◆</div>
+      <div style="font-weight:500; color: var(--navy); margin-bottom:6px;">لا توجد بيانات بعد</div>
+      <div>أضِف أول مؤثرة لتبدأ تتبّع الأداء.</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="quote">لأن كل لمسة تهم</div>
+    <div style="margin-top:6px;">مَلْمَس — مرحلة POC قبل المخزون الكامل</div>
+  </footer>
+
+</div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <h3 id="confirm-title">—</h3>
+    <p id="confirm-message">—</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirm-cancel">إلغاء</button>
+      <button class="btn btn-primary" id="confirm-ok">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ============ Storage adapter (localStorage-backed) ============
+window.storage = (function () {
+  return {
+    async get(key) {
+      try { const v = localStorage.getItem(key); return v == null ? null : { value: v }; }
+      catch { return null; }
+    },
+    async set(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { console.error('storage.set failed', e); }
+    },
+    async delete(key) {
+      try { localStorage.removeItem(key); } catch { }
+    },
+    async list(prefix) {
+      const keys = [];
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(prefix)) keys.push(k);
+        }
+      } catch { }
+      return { keys };
+    }
+  };
+})();
+
+// ============ State ============
+let entries = [];
+let editingId = null;
+let thresholds = { good: 35, ok: 70 };
+let filters = { search: '', platform: '', status: '', sku: '' };
+
+// ============ Toast (non-blocking feedback) ============
+function toast(message, type = 'info', durationMs = 2600) {
+  const wrap = document.getElementById('toast-wrap');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'success' ? ' success' : type === 'error' ? ' error' : '');
+  el.textContent = message;
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.25s';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 280);
+  }, durationMs);
+}
+
+// ============ Confirm modal (promisified) ============
+function confirmModal(title, message, okText = 'تأكيد') {
+  return new Promise(resolve => {
+    const modal = document.getElementById('confirm-modal');
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
+    const okBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
+    okBtn.textContent = okText;
+    modal.classList.add('show');
+    setTimeout(() => okBtn.focus(), 30);
+
+    const onOk = () => { cleanup(); resolve(true); };
+    const onCancel = () => { cleanup(); resolve(false); };
+    const onKey = (e) => {
+      if (e.key === 'Escape') onCancel();
+      else if (e.key === 'Enter') onOk();
+    };
+    function cleanup() {
+      modal.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      document.removeEventListener('keydown', onKey);
+    }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    document.addEventListener('keydown', onKey);
+  });
+}
+
+// ============ Storage ============
+async function loadAll() {
+  try {
+    const settings = await window.storage.get('poc:settings');
+    if (settings && settings.value) {
+      const s = JSON.parse(settings.value);
+      thresholds = s;
+      document.getElementById('threshold-good').value = s.good;
+      document.getElementById('threshold-ok').value = s.ok;
+    }
+  } catch (e) { /* first run */ }
+
+  try {
+    const list = await window.storage.list('poc:inf:');
+    if (list && list.keys) {
+      const items = await Promise.all(
+        list.keys.map(async k => {
+          try {
+            const r = await window.storage.get(k);
+            return r ? JSON.parse(r.value) : null;
+          } catch { return null; }
+        })
+      );
+      entries = items.filter(Boolean);
+    }
+  } catch (e) { entries = []; }
+  render();
+}
+
+async function persist(entry) {
+  try {
+    await window.storage.set('poc:inf:' + entry.id, JSON.stringify(entry));
+  } catch (e) { console.error('persist failed', e); }
+}
+
+async function removeStored(id) {
+  try { await window.storage.delete('poc:inf:' + id); } catch (e) { }
+}
+
+async function saveSettings() {
+  try { await window.storage.set('poc:settings', JSON.stringify(thresholds)); } catch (e) { }
+}
+
+// ============ Computed ============
+function cac(e) {
+  const orders = Number(e.orders) || 0;
+  const cost = Number(e.cost) || 0;
+  if (orders === 0) return null;
+  return cost / orders;
+}
+function roas(e) {
+  const cost = Number(e.cost) || 0;
+  const rev = Number(e.revenue) || 0;
+  if (cost === 0) return null;
+  return rev / cost;
+}
+function verdict(c) {
+  if (c === null) return { cls: 'none', text: '—' };
+  if (c <= thresholds.good) return { cls: 'good', text: 'أعد التعاقد' };
+  if (c <= thresholds.ok) return { cls: 'ok', text: 'متابعة' };
+  return { cls: 'bad', text: 'لا تعاقد' };
+}
+function fmtMoney(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return Math.round(n).toLocaleString('en-US');
+}
+function fmtNum(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return Number(n).toLocaleString('en-US');
+}
+
+// كثافة التحويل: عدد الطلبات لكل 1000 متابع — مؤشّر لجودة الجمهور (لا فقط حجمه).
+function density(e) {
+  const orders = Number(e.orders) || 0;
+  const followers = Number(e.followers) || 0;
+  if (followers === 0) return null;
+  return (orders / followers) * 1000;
+}
+
+function statusClass(s) {
+  if (s === 'نُشر') return 'live';
+  if (s === 'قيد التنفيذ') return 'progress';
+  if (s === 'مجدول') return 'scheduled';
+  if (s === 'منتهي') return 'done';
+  return '';
+}
+
+// تطبيق الفلاتر على القائمة قبل العرض.
+function applyFilters(list) {
+  const q = (filters.search || '').toLowerCase();
+  return list.filter(e => {
+    if (filters.platform && e.platform !== filters.platform) return false;
+    if (filters.status && e.status !== filters.status) return false;
+    if (filters.sku && e.sku !== filters.sku) return false;
+    if (q) {
+      const hay = ((e.name || '') + ' ' + (e.handle || '')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+// تجميع الأداء حسب المنصّة — لمعرفة أيّها الأرخص و أيّها الأغلى CAC.
+function platformBreakdown() {
+  const by = {};
+  for (const e of entries) {
+    const p = e.platform || '—';
+    if (!by[p]) by[p] = { count: 0, orders: 0, spend: 0, revenue: 0 };
+    by[p].count++;
+    by[p].orders += Number(e.orders) || 0;
+    by[p].spend += Number(e.cost) || 0;
+    by[p].revenue += Number(e.revenue) || 0;
+  }
+  return Object.entries(by).map(([platform, x]) => ({
+    platform,
+    count: x.count,
+    cac: x.orders > 0 ? x.spend / x.orders : null,
+    roas: x.spend > 0 ? x.revenue / x.spend : null,
+    spend: x.spend,
+    orders: x.orders
+  }));
+}
+
+// ============ Render ============
+function render() {
+  // KPIs — على كامل المجموعة (لا تتأثر بالفلاتر)
+  const total = entries.length;
+  const totalOrders = entries.reduce((s, e) => s + (Number(e.orders) || 0), 0);
+  const totalSpend = entries.reduce((s, e) => s + (Number(e.cost) || 0), 0);
+  const totalRev = entries.reduce((s, e) => s + (Number(e.revenue) || 0), 0);
+  const avgCac = totalOrders > 0 ? totalSpend / totalOrders : null;
+  const avgRoas = totalSpend > 0 ? totalRev / totalSpend : null;
+
+  // نسبة "أعد التعاقد": عدد المؤثرات التي حقّقت CAC ضمن العتبة الجيدة (من بين الذين لديهم طلبات).
+  const withCac = entries.map(e => cac(e)).filter(c => c !== null);
+  const goodCount = withCac.filter(c => c <= thresholds.good).length;
+  const successPct = withCac.length > 0 ? (goodCount / withCac.length) * 100 : null;
+
+  document.getElementById('kpi-count').textContent = total;
+  document.getElementById('kpi-orders').textContent = fmtNum(totalOrders);
+  document.getElementById('kpi-spend').textContent = fmtMoney(totalSpend);
+  document.getElementById('kpi-cac').textContent = avgCac === null ? '—' : fmtMoney(avgCac);
+  document.getElementById('kpi-roas').textContent = avgRoas === null ? '—' : avgRoas.toFixed(2);
+  document.getElementById('kpi-success').textContent = successPct === null ? '—' : Math.round(successPct);
+
+  renderBreakdown();
+
+  // Filter then sort
+  const sortKey = document.getElementById('sort').value;
+  const filtered = applyFilters(entries);
+  const sorted = [...filtered].sort((a, b) => {
+    const cacA = cac(a), cacB = cac(b);
+    const roasA = roas(a), roasB = roas(b);
+    switch (sortKey) {
+      case 'cac-asc':
+        if (cacA === null) return 1;
+        if (cacB === null) return -1;
+        return cacA - cacB;
+      case 'cac-desc':
+        if (cacA === null) return 1;
+        if (cacB === null) return -1;
+        return cacB - cacA;
+      case 'roas-desc':
+        if (roasA === null) return 1;
+        if (roasB === null) return -1;
+        return roasB - roasA;
+      case 'orders-desc':
+        return (Number(b.orders) || 0) - (Number(a.orders) || 0);
+      case 'revenue-desc':
+        return (Number(b.revenue) || 0) - (Number(a.revenue) || 0);
+      case 'date-desc':
+        return (b.date || '').localeCompare(a.date || '');
+      case 'date-asc':
+        return (a.date || '').localeCompare(b.date || '');
+    }
+    return 0;
+  });
+
+  // Table
+  const tbody = document.getElementById('rows');
+  const empty = document.getElementById('empty');
+  if (sorted.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    const hasFilters = filters.search || filters.platform || filters.status || filters.sku;
+    if (hasFilters && entries.length > 0) {
+      empty.innerHTML = `<div class="empty-icon">◆</div>
+        <div style="font-weight:500; color: var(--navy); margin-bottom:6px;">لا نتائج للفلاتر الحالية</div>
+        <div>جرّب توسيع الفلاتر أو إفراغها.</div>`;
+    } else {
+      empty.innerHTML = `<div class="empty-icon">◆</div>
+        <div style="font-weight:500; color: var(--navy); margin-bottom:6px;">لا توجد بيانات بعد</div>
+        <div>أضِف أول مؤثرة لتبدأ تتبّع الأداء.</div>`;
+    }
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = sorted.map(e => {
+    const c = cac(e);
+    const r = roas(e);
+    const v = verdict(c);
+    const d = density(e);
+    return `<tr>
+      <td>
+        <div style="font-weight:500; color: var(--navy);">${escapeHtml(e.name || '—')}</div>
+        <div class="handle" dir="ltr" style="text-align:start;">${escapeHtml(e.handle || '')}</div>
+      </td>
+      <td><span class="platform-pill">${escapeHtml(e.platform || '—')}</span></td>
+      <td class="num">
+        ${fmtNum(e.followers)}
+        ${d !== null ? `<div class="density">${d.toFixed(2)} طلب / 1k</div>` : ''}
+      </td>
+      <td style="font-size:13px;">${escapeHtml(e.sku || '—')}</td>
+      <td class="num">${fmtMoney(e.cost)}</td>
+      <td class="num">${fmtNum(e.orders)}</td>
+      <td class="num">${fmtMoney(e.revenue)}</td>
+      <td class="num" style="font-weight:600;">${c === null ? '—' : fmtMoney(c)}</td>
+      <td class="num">${r === null ? '—' : r.toFixed(2) + '×'}</td>
+      <td><span class="verdict ${v.cls}">${v.text}</span></td>
+      <td><span class="status-pill ${statusClass(e.status)}">${escapeHtml(e.status || '—')}</span></td>
+      <td class="num" style="font-size:12px; color: var(--muted);">${escapeHtml(e.date || '—')}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-danger" onclick="editEntry('${e.id}')" title="تعديل">✎</button>
+        <button class="btn btn-danger" onclick="deleteEntry('${e.id}')" title="حذف">×</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderBreakdown() {
+  const panel = document.getElementById('breakdown-panel');
+  const grid = document.getElementById('breakdown-grid');
+  const data = platformBreakdown().filter(b => b.count > 0);
+  // اعرض البانل فقط عند وجود منصّتَين أو أكثر — قبل ذلك المقارنة بلا معنى.
+  if (data.length < 2) { panel.style.display = 'none'; return; }
+  panel.style.display = '';
+
+  // حدّد الأفضل (أقل CAC) والأسوأ (أعلى CAC) من بين الذين لديهم CAC.
+  const withCac = data.filter(b => b.cac !== null);
+  let bestKey = null, worstKey = null;
+  if (withCac.length >= 2) {
+    const minCac = Math.min(...withCac.map(b => b.cac));
+    const maxCac = Math.max(...withCac.map(b => b.cac));
+    bestKey = withCac.find(b => b.cac === minCac)?.platform;
+    worstKey = withCac.find(b => b.cac === maxCac)?.platform;
+  }
+
+  grid.innerHTML = data.map(b => {
+    const cls = b.platform === bestKey ? 'best' : (b.platform === worstKey ? 'worst' : '');
+    return `<div class="breakdown-card ${cls}">
+      <div class="bc-platform">${escapeHtml(b.platform)} <span style="font-weight:400; color: var(--muted); font-size: 11px;">(${b.count})</span></div>
+      <div class="bc-stat">CAC: <strong>${b.cac === null ? '—' : fmtMoney(b.cac)} ر.س</strong></div>
+      <div class="bc-stat">ROAS: <strong>${b.roas === null ? '—' : b.roas.toFixed(2) + '×'}</strong></div>
+      <div class="bc-stat">إنفاق: <strong>${fmtMoney(b.spend)} ر.س</strong> · طلبات: <strong>${fmtNum(b.orders)}</strong></div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+// ============ Form ============
+function openForm(entry) {
+  editingId = entry ? entry.id : null;
+  document.getElementById('form-title').textContent = entry ? 'تعديل بيانات المؤثرة' : 'إضافة مؤثرة جديدة';
+  const e = entry || {};
+  document.getElementById('f-name').value = e.name || '';
+  document.getElementById('f-handle').value = e.handle || '';
+  document.getElementById('f-platform').value = e.platform || 'Instagram';
+  document.getElementById('f-followers').value = e.followers || '';
+  document.getElementById('f-sku').value = e.sku || 'SKU 1 — منظم العربة';
+  document.getElementById('f-deal').value = e.deal || 'هدية';
+  document.getElementById('f-cost').value = e.cost || '';
+  document.getElementById('f-coupon').value = e.coupon || '';
+  document.getElementById('f-date').value = e.date || new Date().toISOString().slice(0, 10);
+  document.getElementById('f-orders').value = e.orders || '';
+  document.getElementById('f-revenue').value = e.revenue || '';
+  document.getElementById('f-status').value = e.status || 'نُشر';
+  document.getElementById('f-notes').value = e.notes || '';
+  document.getElementById('form-panel').classList.remove('hidden');
+  document.getElementById('f-name').focus();
+  document.getElementById('form-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeForm() {
+  document.getElementById('form-panel').classList.add('hidden');
+  editingId = null;
+}
+
+async function saveEntry() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { toast('الرجاء إدخال اسم المؤثرة.', 'error'); return; }
+  const entry = {
+    id: editingId || ('inf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)),
+    name,
+    handle: document.getElementById('f-handle').value.trim(),
+    platform: document.getElementById('f-platform').value,
+    followers: Number(document.getElementById('f-followers').value) || 0,
+    sku: document.getElementById('f-sku').value,
+    deal: document.getElementById('f-deal').value,
+    cost: Number(document.getElementById('f-cost').value) || 0,
+    coupon: document.getElementById('f-coupon').value.trim(),
+    date: document.getElementById('f-date').value,
+    orders: Number(document.getElementById('f-orders').value) || 0,
+    revenue: Number(document.getElementById('f-revenue').value) || 0,
+    status: document.getElementById('f-status').value,
+    notes: document.getElementById('f-notes').value.trim(),
+    updated: Date.now()
+  };
+  await persist(entry);
+  if (editingId) {
+    entries = entries.map(x => x.id === editingId ? entry : x);
+  } else {
+    entries.push(entry);
+  }
+  closeForm();
+  render();
+}
+
+window.editEntry = function(id) {
+  const e = entries.find(x => x.id === id);
+  if (e) openForm(e);
+};
+
+window.deleteEntry = async function(id) {
+  const e = entries.find(x => x.id === id);
+  if (!e) return;
+  const ok = await confirmModal('حذف المؤثرة', 'هل تريد حذف "' + (e.name || '—') + '" من القائمة؟', 'حذف');
+  if (!ok) return;
+  await removeStored(id);
+  entries = entries.filter(x => x.id !== id);
+  render();
+  toast('تم الحذف.', 'success');
+};
+
+async function clearAll() {
+  if (entries.length === 0) { toast('لا توجد بيانات للحذف.', 'error'); return; }
+  const ok = await confirmModal('مسح الكل', 'سيتم حذف جميع بيانات المؤثرات نهائياً (' + entries.length + '). متابعة؟', 'حذف الكل');
+  if (!ok) return;
+  for (const e of entries) await removeStored(e.id);
+  entries = [];
+  render();
+  toast('تم المسح.', 'success');
+}
+
+function download(filename, content, mime) {
+  const blob = new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCSV() {
+  if (entries.length === 0) { toast('لا توجد بيانات للتصدير.', 'error'); return; }
+  const headers = ['Name','Handle','Platform','Followers','SKU','Deal','Cost SAR','Coupon','Date','Orders','Revenue SAR','CAC SAR','ROAS','Orders/1k Followers','Status','Notes'];
+  const rows = entries.map(e => {
+    const c = cac(e), r = roas(e), d = density(e);
+    return [
+      e.name, e.handle, e.platform, e.followers, e.sku, e.deal,
+      e.cost, e.coupon, e.date, e.orders, e.revenue,
+      c === null ? '' : c.toFixed(2),
+      r === null ? '' : r.toFixed(2),
+      d === null ? '' : d.toFixed(3),
+      e.status, (e.notes || '').replace(/\n/g, ' ')
+    ].map(v => {
+      const s = String(v == null ? '' : v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }).join(',');
+  });
+  const csv = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+  download('malmas_poc_influencers_' + new Date().toISOString().slice(0,10) + '.csv', csv, 'text/csv;charset=utf-8');
+  toast('\u062A\u0645 \u062A\u0635\u062F\u064A\u0631 CSV.', 'success');
+}
+
+function exportJSON() {
+  if (entries.length === 0) { toast('\u0644\u0627 \u062A\u0648\u062C\u062F \u0628\u064A\u0627\u0646\u0627\u062A \u0644\u0644\u062A\u0635\u062F\u064A\u0631.', 'error'); return; }
+  const payload = { thresholds, entries };
+  download(
+    'malmas_poc_influencers_' + new Date().toISOString().slice(0,10) + '.json',
+    JSON.stringify(payload, null, 2),
+    'application/json;charset=utf-8'
+  );
+  toast('\u062A\u0645 \u062A\u0635\u062F\u064A\u0631 JSON.', 'success');
+}
+
+async function importJSON(file) {
+  let raw;
+  try {
+    const text = await file.text();
+    raw = JSON.parse(text);
+  } catch {
+    toast('\u0627\u0644\u0645\u0644\u0641 \u0644\u064A\u0633 JSON \u0635\u0627\u0644\u062D\u0627\u064B.', 'error');
+    return;
+  }
+  const list = Array.isArray(raw) ? raw : (Array.isArray(raw.entries) ? raw.entries : []);
+  if (raw && raw.thresholds && typeof raw.thresholds === 'object') {
+    thresholds = { good: Number(raw.thresholds.good) || 35, ok: Number(raw.thresholds.ok) || 70 };
+    document.getElementById('threshold-good').value = thresholds.good;
+    document.getElementById('threshold-ok').value = thresholds.ok;
+    await saveSettings();
+  }
+  let added = 0;
+  for (const ent of list) {
+    if (!ent || !ent.name) continue;
+    const e = {
+      id: 'inf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      name: ent.name, handle: ent.handle || '',
+      platform: ent.platform || 'Instagram',
+      followers: Number(ent.followers) || 0,
+      sku: ent.sku || '', deal: ent.deal || '\u0647\u062F\u064A\u0629',
+      cost: Number(ent.cost) || 0, coupon: ent.coupon || '',
+      date: ent.date || '', orders: Number(ent.orders) || 0,
+      revenue: Number(ent.revenue) || 0,
+      status: ent.status || '\u0646\u064F\u0634\u0631', notes: ent.notes || '',
+      updated: Date.now()
+    };
+    await persist(e);
+    entries.push(e);
+    added++;
+  }
+  render();
+  if (added === 0) toast('\u0644\u0645 \u064A\u062A\u0645 \u062A\u0639\u0631\u064A\u0641 \u0623\u064A \u0645\u0624\u062B\u0631\u0629 \u0641\u064A \u0627\u0644\u0645\u0644\u0641.', 'error');
+  else toast('\u062A\u0645 \u0627\u0633\u062A\u064A\u0631\u0627\u062F ' + added + ' \u0645\u0624\u062B\u0631\u0629.', 'success');
+}
+
+// ============ Events ============
+document.getElementById('add-btn').addEventListener('click', () => openForm(null));
+document.getElementById('save-btn').addEventListener('click', saveEntry);
+document.getElementById('cancel-btn').addEventListener('click', closeForm);
+document.getElementById('clear-btn').addEventListener('click', clearAll);
+document.getElementById('export-btn').addEventListener('click', exportCSV);
+document.getElementById('export-json-btn').addEventListener('click', exportJSON);
+document.getElementById('import-json-btn').addEventListener('click', () => document.getElementById('import-file').click());
+document.getElementById('import-file').addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (f) await importJSON(f);
+  e.target.value = '';
+});
+document.getElementById('print-btn').addEventListener('click', () => window.print());
+document.getElementById('sort').addEventListener('change', render);
+
+// Filters
+const onFilter = () => {
+  filters.search = document.getElementById('filter-search').value.trim();
+  filters.platform = document.getElementById('filter-platform').value;
+  filters.status = document.getElementById('filter-status').value;
+  filters.sku = document.getElementById('filter-sku').value;
+  render();
+};
+document.getElementById('filter-search').addEventListener('input', onFilter);
+document.getElementById('filter-platform').addEventListener('change', onFilter);
+document.getElementById('filter-status').addEventListener('change', onFilter);
+document.getElementById('filter-sku').addEventListener('change', onFilter);
+document.getElementById('clear-filters').addEventListener('click', () => {
+  document.getElementById('filter-search').value = '';
+  document.getElementById('filter-platform').value = '';
+  document.getElementById('filter-status').value = '';
+  document.getElementById('filter-sku').value = '';
+  filters = { search: '', platform: '', status: '', sku: '' };
+  render();
+});
+
+document.getElementById('threshold-good').addEventListener('change', async (ev) => {
+  thresholds.good = Number(ev.target.value) || 0;
+  await saveSettings();
+  render();
+});
+document.getElementById('threshold-ok').addEventListener('change', async (ev) => {
+  thresholds.ok = Number(ev.target.value) || 0;
+  await saveSettings();
+  render();
+});
+
+// Esc يغلق نموذج الإضافة عند فتحه
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !document.getElementById('form-panel').classList.contains('hidden')) {
+    closeForm();
+  }
+});
+
+// Init
+loadAll();
+</script>
+</body>
+</html>
